@@ -6,8 +6,6 @@ import Footer from "./Components/Footer";
 import Items from "./Items";
 import Categories from "./Components/Categories";
 import ShowFullItem from "./Components/ShowFullItem";
-import PaymentSuccess from './pages/PaymentSuccess'
-import PaymentFailed from './pages/PaymentFailed'
 
 class App extends React.Component {
 

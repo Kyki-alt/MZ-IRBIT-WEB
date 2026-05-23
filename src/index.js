@@ -11,8 +11,7 @@ import {
 import App from './App'
 import Checkout from './pages/Checkout'
 import News from './pages/News'
-import PaymentSuccess from './pages/PaymentSuccess'
-import PaymentFailed from './pages/PaymentFailed'
+import PaymentResult from './pages/PaymentResult'
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 
@@ -38,14 +37,9 @@ root.render(
     />
 
     <Route
-      path="/payment-success"
-      element={<PaymentSuccess />}
-    />
-
-    <Route
-      path="/payment-failed"
-      element={<PaymentFailed />}
-    />
+      path="/payment-result"
+      element={<PaymentResult />}
+      />
 
   </Routes>
 
