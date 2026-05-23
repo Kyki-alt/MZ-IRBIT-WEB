@@ -14,13 +14,16 @@ export default function PaymentResult() {
   const orderId = params.get('orderId')
 
   useEffect(() => {
-    if (status === 'success') {
+
+    if (status === 'success' || status === 'cod') {
+
       localStorage.removeItem('cart')
 
       setTimeout(() => {
         navigate('/')
       }, 5000)
     }
+
   }, [status, navigate])
 
   return (
@@ -29,24 +32,57 @@ export default function PaymentResult() {
       <div className={`payment-card ${status}`}>
 
         <div className="icon">
-          {status === 'success' ? '✅' : '❌'}
+          {status === 'success'
+            ? '✅'
+            : status === 'cod'
+            ? '📦'
+            : '❌'}
         </div>
 
         <h1>
           {status === 'success'
             ? 'Оплата прошла успешно'
-            : 'Ошибка оплаты'}
+            : status === 'cod'
+             ? (
+            <>
+              Заказ оформлен 📦
+
+              <div className="badge cod">
+                Оплата при получении
+              </div>
+
+              <p className="text">
+                Спасибо за заказ!  
+                Оплата производится при получении товара курьеру или в пункте выдачи.
+              </p>
+
+              <div className="cod-box">
+                <h3>Как это работает</h3>
+                <ul>
+                  <li>Мы обрабатываем ваш заказ</li>
+                  <li>Готовим товар к отправке</li>
+                  <li>Связываемся при необходимости</li>
+                  <li>Вы оплачиваете при получении</li>
+                </ul>
+              </div>
+            </>
+          )
+          : 'Ошибка оплаты'}
         </h1>
 
         <p className="order">
           Заказ № {orderId}
         </p>
 
-        <p className="text">
-          {status === 'success'
-            ? 'Спасибо за покупку! Скоро вы будете перенаправлены в магазин.'
-            : 'Платёж не был завершён. Попробуйте снова.'}
-        </p>
+        {status === 'success' ? (
+          <p className="text">
+            Спасибо за покупку! Скоро вы будете перенаправлены в магазин.
+          </p>
+        ) : status === 'failed' ? (
+          <p className="text">
+            Платёж не был завершён. Попробуйте снова.
+          </p>
+        ) : null}
 
         <button
           className="btn"
