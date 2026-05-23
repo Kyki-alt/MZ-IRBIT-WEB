@@ -448,11 +448,14 @@ export default function Checkout() {
           LMI_PAYMENT_NO:
             orderId,
 
+          LMI_RESULT_URL:
+          'https://mz-irbit.onrender.com/payment/webmoney/result',
+
           LMI_SUCCESS_URL:
-          `http://localhost:3000/payment-success?orderId=${orderId}`,
+          `https://mz-irbit-web.onrender.com/payment-success?orderId=${orderId}`,
 
           LMI_FAIL_URL:
-          'http://localhost:3000/payment-failed',
+          'https://mz-irbit-web.onrender/payment-failed',
 
           LMI_PAYMENT_DESC_BASE64:
             btoa(

@@ -26,7 +26,8 @@ export default function PaymentSuccess() {
     useNavigate()
 
   const orderId =
-    searchParams.get('orderId')
+    searchParams.get('orderId') ||
+    searchParams.get('LMI_PAYMENT_NO')
 
   useEffect(() => {
 
