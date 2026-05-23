@@ -1,89 +1,61 @@
 import React, { useEffect } from 'react'
-
-import {
-  useNavigate
-} from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import './PaymentResult.css'
 
 export default function PaymentResult() {
 
-  const navigate =
-    useNavigate()
+  const navigate = useNavigate()
 
-  // получаем hash
-  const hash =
-    window.location.hash
+  const hash = window.location.hash
+  const queryString = hash.split('?')[1]
+  const params = new URLSearchParams(queryString)
 
-  // берём query после ?
-  const queryString =
-    hash.split('?')[1]
-
-  // парсим параметры
-  const params =
-    new URLSearchParams(queryString)
-
-  const status =
-    params.get('status')
-
-  const orderId =
-    params.get('orderId')
+  const status = params.get('status')
+  const orderId = params.get('orderId')
 
   useEffect(() => {
-
     if (status === 'success') {
-
       localStorage.removeItem('cart')
 
       setTimeout(() => {
-
         navigate('/')
-
       }, 5000)
     }
-
   }, [status, navigate])
 
   return (
+    <div className="payment-wrapper">
 
-    <div className='payment-page'>
+      <div className={`payment-card ${status}`}>
 
-      {status === 'success' ? (
+        <div className="icon">
+          {status === 'success' ? '✅' : '❌'}
+        </div>
 
-        <>
+        <h1>
+          {status === 'success'
+            ? 'Оплата прошла успешно'
+            : 'Ошибка оплаты'}
+        </h1>
 
-          <h1>
-            Оплата успешна ✅
-          </h1>
+        <p className="order">
+          Заказ № {orderId}
+        </p>
 
-          <p>
-            Заказ №{orderId}
-          </p>
+        <p className="text">
+          {status === 'success'
+            ? 'Спасибо за покупку! Скоро вы будете перенаправлены в магазин.'
+            : 'Платёж не был завершён. Попробуйте снова.'}
+        </p>
 
-          <p>
-            Через несколько секунд
-            вы вернетесь в магазин
-          </p>
+        <button
+          className="btn"
+          onClick={() => navigate('/')}
+        >
+          Вернуться в магазин
+        </button>
 
-        </>
-
-      ) : (
-
-        <>
-
-          <h1>
-            Ошибка оплаты ❌
-          </h1>
-
-          <p>
-            Заказ №{orderId}
-          </p>
-
-          <p>
-            Попробуйте снова
-          </p>
-
-        </>
-
-      )}
+      </div>
 
     </div>
   )
