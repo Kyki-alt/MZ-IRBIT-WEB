@@ -452,10 +452,10 @@ export default function Checkout() {
           'https://mz-irbit.onrender.com/payment/webmoney/result',
 
           LMI_SUCCESS_URL:
-          `https://mz-irbit.onrender.com/payment/success?orderId=${orderId}`,
+          `https://mz-irbit-web.onrender.com/payment-success`,
 
           LMI_FAIL_URL:
-          `https://mz-irbit.onrender.com/payment/fail?orderId=${orderId}`,
+          `https://mz-irbit-web.onrender.com/payment-fail`,
 
           LMI_PAYMENT_DESC_BASE64:
             btoa(
