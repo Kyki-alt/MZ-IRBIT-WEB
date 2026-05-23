@@ -1,28 +1,34 @@
 import React, { useEffect } from 'react'
 
 import {
-  useSearchParams,
   useNavigate
 } from 'react-router-dom'
 
 export default function PaymentResult() {
 
-  const [searchParams] =
-    useSearchParams()
-
   const navigate =
     useNavigate()
 
+  // получаем hash
+  const hash =
+    window.location.hash
+
+  // берём query после ?
+  const queryString =
+    hash.split('?')[1]
+
+  // парсим параметры
+  const params =
+    new URLSearchParams(queryString)
+
   const status =
-    searchParams.get('status')
+    params.get('status')
 
   const orderId =
-    searchParams.get('orderId')
+    params.get('orderId')
 
   useEffect(() => {
 
-    // если оплата успешна —
-    // очищаем корзину
     if (status === 'success') {
 
       localStorage.removeItem('cart')
@@ -45,7 +51,7 @@ export default function PaymentResult() {
         <>
 
           <h1>
-            Оплата прошла успешно ✅
+            Оплата успешна ✅
           </h1>
 
           <p>
