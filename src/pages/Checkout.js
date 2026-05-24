@@ -25,6 +25,7 @@ export default function Checkout() {
   const [paymentError, setPaymentError] = useState('')
   const [addressError, setAddressError] = useState('')
   const [cartItems, setCartItems] = useState([])
+  const [loading, setLoading] = useState(false)
 
   const getPaymentClass = (type) =>
   payment === type ? 'payment active-payment' : 'payment';
@@ -270,7 +271,11 @@ export default function Checkout() {
   }
     const handleOrder = async () => {
 
+      if (loading) return
+      setLoading(true)
+
       if (!validate()) {
+        setLoading(false)
         return
       }
 
@@ -339,7 +344,7 @@ export default function Checkout() {
       } catch (error) {
 
         console.log(error)
-
+        setLoading(false)
         setAddressError(
           'Ошибка проверки адреса'
         )
@@ -926,8 +931,13 @@ export default function Checkout() {
             <button
               className="submit"
               onClick={handleOrder}
+              disabled={loading}
+              style={{
+                opacity: loading ? 0.6 : 1,
+                cursor: loading ? 'not-allowed' : 'pointer'
+              }}
             >
-              Подтвердить заказ
+              {loading ? 'Оформляем заказ...' : 'Подтвердить заказ'}
             </button>
           </section>
 
