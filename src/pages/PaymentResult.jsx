@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './PaymentResult.css'
 
@@ -12,30 +12,31 @@ export default function PaymentResult() {
 
   const status = params.get('status')
   const orderId = params.get('orderId')
+
   const [seconds, setSeconds] = useState(12)
 
- useEffect(() => {
+  useEffect(() => {
+    if (status === 'success' || status === 'cod') {
+      setSeconds(12)
+    }
+  }, [status])
 
-  if (status === 'success' || status === 'cod') {
+  useEffect(() => {
 
-    const timer = setInterval(() => {
+    if (status !== 'success' && status !== 'cod') return
+    if (seconds <= 0) {
+      localStorage.removeItem('cart')
+      navigate('/')
+      return
+    }
 
-      setSeconds(prev => {
-        if (prev <= 1) {
-          clearInterval(timer)
-          localStorage.removeItem('cart')
-          navigate('/')
-          return 0
-        }
-        return prev - 1
-      })
-
+    const timer = setTimeout(() => {
+      setSeconds(prev => prev - 1)
     }, 1000)
 
-    return () => clearInterval(timer)
-  }
+    return () => clearTimeout(timer)
 
-}, [status, navigate])
+  }, [seconds, status, navigate])
 
   return (
     <div className="payment-wrapper">
