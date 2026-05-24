@@ -97,10 +97,7 @@ export default function PaymentResult() {
 
         <button
           className="btn"
-          onClick={() => {
-            localStorage.removeItem('cart')
-            navigate('/')
-          }}
+          onClick={() => navigate('/')}
         >
           Перейти сейчас
         </button>
