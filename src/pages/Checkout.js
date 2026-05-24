@@ -403,11 +403,12 @@ export default function Checkout() {
       // ОПЛАТА ПРИ ПОЛУЧЕНИИ
       if (payment === 'cash') {
 
-        localStorage.removeItem('cart')
+      localStorage.removeItem('cart')
 
-        alert('Заказ успешно оформлен')
+      window.location.href =
+      `/#/payment-result?status=cod&orderId=${orderId}`
 
-        return
+      return
       }
 
       // цена в рублях
