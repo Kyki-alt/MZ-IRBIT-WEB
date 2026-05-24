@@ -25,7 +25,7 @@ export default function Footer() {
 
           <p>
             <FaMapMarkerAlt className='footer-icon' />
-            г. Ирбит, улица Елизарьевых, 3
+            г. Ирбит, улица Елизарьевых, дом 3
           </p>
 
           <p>

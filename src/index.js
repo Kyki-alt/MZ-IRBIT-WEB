@@ -12,6 +12,7 @@ import App from './App'
 import Checkout from './pages/Checkout'
 import News from './pages/News'
 import PaymentResult from './pages/PaymentResult'
+import AdminLogin from './pages/AdminLogin'
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 
@@ -40,6 +41,11 @@ root.render(
       path="/payment-result"
       element={<PaymentResult />}
       />
+
+    <Route
+      path="/admin/login"
+      element={<AdminLogin />}
+    />
 
   </Routes>
 
