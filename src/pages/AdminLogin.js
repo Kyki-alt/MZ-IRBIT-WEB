@@ -26,7 +26,7 @@ export default function AdminLogin() {
       setError('')
 
       const res = await axios.post(
-        'https://ТВОЙ-БЭКЕНД/admin/login',
+        'https://mz-irbit.onrender.com/admin/login',
         {
           login,
           password
