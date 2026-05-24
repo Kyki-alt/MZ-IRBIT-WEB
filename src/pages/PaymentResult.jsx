@@ -69,7 +69,7 @@ export default function PaymentResult() {
               </p>
 
               <div className="cod-box">
-                <h3>Как это работает</h3>
+                <h2>Как это работает</h2>
                 <ul>
                   <li>Мы обрабатываем ваш заказ</li>
                   <li>Готовим товар к отправке</li>
