@@ -21,7 +21,7 @@ export default function PaymentResult() {
 
       setTimeout(() => {
         navigate('/')
-      }, 5000)
+      }, 10000)
     }
 
   }, [status, navigate])
