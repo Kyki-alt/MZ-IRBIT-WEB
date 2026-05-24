@@ -57,7 +57,7 @@ export default function PaymentResult() {
             : status === 'cod'
              ? (
             <>
-              Заказ оформлен 📦
+              Заказ оформлен
 
               <div className="badge cod">
                 Оплата при получении
