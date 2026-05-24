@@ -12,19 +12,30 @@ export default function PaymentResult() {
 
   const status = params.get('status')
   const orderId = params.get('orderId')
+  const [seconds, setSeconds] = useState(12)
 
-  useEffect(() => {
+ useEffect(() => {
 
-    if (status === 'success' || status === 'cod') {
+  if (status === 'success' || status === 'cod') {
 
-      localStorage.removeItem('cart')
+    const timer = setInterval(() => {
 
-      setTimeout(() => {
-        navigate('/')
-      }, 10000)
-    }
+      setSeconds(prev => {
+        if (prev <= 1) {
+          clearInterval(timer)
+          localStorage.removeItem('cart')
+          navigate('/')
+          return 0
+        }
+        return prev - 1
+      })
 
-  }, [status, navigate])
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }
+
+}, [status, navigate])
 
   return (
     <div className="payment-wrapper">
@@ -74,21 +85,22 @@ export default function PaymentResult() {
           Заказ № {orderId}
         </p>
 
-        {status === 'success' ? (
-          <p className="text">
-            Спасибо за покупку! Скоро вы будете перенаправлены в магазин.
-          </p>
-        ) : status === 'failed' ? (
-          <p className="text">
-            Платёж не был завершён. Попробуйте снова.
-          </p>
-        ) : null}
+        <p className="text">
+          {status === 'success'
+            ? `Спасибо за покупку! Переход в магазин через ${seconds} сек.`
+            : status === 'cod'
+            ? `Ваш заказ оформлен! Переход через ${seconds} сек.`
+            : 'Платёж не был завершён. Попробуйте снова.'}
+        </p>
 
         <button
           className="btn"
-          onClick={() => navigate('/')}
+          onClick={() => {
+            localStorage.removeItem('cart')
+            navigate('/')
+          }}
         >
-          Вернуться в магазин
+          Перейти сейчас
         </button>
 
       </div>
