@@ -56,10 +56,16 @@ export default function Header(props) {
         Новости
       </Link>
 
-      <a
-        href="#footer" className="nav-link">
+      <button
+        className="nav-link"
+        onClick={() => {
+          document.getElementById('footer')?.scrollIntoView({
+            behavior: 'smooth'
+          })
+        }}
+        >
         Контакты
-      </a>
+      </button>
 
       <div className="cart-wrapper">
 
