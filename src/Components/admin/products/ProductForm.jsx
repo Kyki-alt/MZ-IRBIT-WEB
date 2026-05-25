@@ -43,11 +43,6 @@ const handleSubmit = (e) => {
 
   if (imgLoading) return
 
-  if (!img) {
-    alert('Добавь фото')
-    return
-  }
-
   const payload = {
     title,
     price: Number(price),
@@ -203,8 +198,8 @@ const uploadImage = async (file) => {
         В наличии
       </label>
 
-      <button type="submit">
-        {editingProduct ? 'Обновить' : 'Создать'}
+      <button type="submit" disabled={imgLoading}>
+        {imgLoading ? 'Загрузка...' : (editingProduct ? 'Обновить' : 'Создать')}
       </button>
     </form>
   )
