@@ -42,7 +42,11 @@ export default function AdminLogin() {
 
     } catch (err) {
 
-      setError('Неверный логин или пароль')
+  if (err.response?.data?.message) {
+    setError(err.response.data.message)
+  } else {
+    setError('Ошибка сервера')
+  }
 
     } finally {
 
@@ -58,7 +62,7 @@ export default function AdminLogin() {
       <div className="admin-login-card">
 
         <h1>
-          Вход в админку
+          Вход в админ панель 
         </h1>
 
         <input
