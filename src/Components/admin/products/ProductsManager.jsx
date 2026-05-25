@@ -6,40 +6,60 @@ export default function ProductsManager() {
 
   const [products, setProducts] = useState([])
   const [showForm, setShowForm] = useState(false)
+  const [editingProduct, setEditingProduct] = useState(null)
 
   useEffect(() => {
     fetchProducts()
   }, [])
 
-  // GET
   const fetchProducts = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/products`)
-      const data = await response.json()
+      const res = await fetch(`${API_URL}/api/products`)
+      const data = await res.json()
       setProducts(data)
-    } catch (err) {
-      console.error(err)
+    } catch (e) {
+      console.error(e)
     }
   }
 
-  // POST
+  // CREATE
   const addProduct = async (product) => {
     try {
-      const response = await fetch(`${API_URL}/api/products`, {
+      const res = await fetch(`${API_URL}/api/products`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(product)
       })
 
-      const data = await response.json()
-
+      const data = await res.json()
       setProducts([data, ...products])
       setShowForm(false)
 
-    } catch (err) {
-      console.error(err)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  // UPDATE
+  const updateProduct = async (id, product) => {
+    try {
+      const res = await fetch(`${API_URL}/api/products/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(product)
+      })
+
+      const data = await res.json()
+
+      setProducts(products.map(p =>
+        p.id === id ? data : p
+      ))
+
+      setEditingProduct(null)
+      setShowForm(false)
+
+    } catch (e) {
+      console.error(e)
     }
   }
 
@@ -51,10 +71,14 @@ export default function ProductsManager() {
       })
 
       setProducts(products.filter(p => p.id !== id))
-
-    } catch (err) {
-      console.error(err)
+    } catch (e) {
+      console.error(e)
     }
+  }
+
+  const startEdit = (product) => {
+    setEditingProduct(product)
+    setShowForm(true)
   }
 
   return (
@@ -63,19 +87,24 @@ export default function ProductsManager() {
       <div className="products-header">
         <h2>📦 Товары</h2>
 
-        <button
-          className="add-product-btn"
-          onClick={() => setShowForm(!showForm)}
-        >
-          {showForm ? 'Закрыть' : 'Добавить товар'}
+        <button onClick={() => {
+          setShowForm(!showForm)
+          setEditingProduct(null)
+        }}>
+          {showForm ? 'Закрыть' : 'Добавить'}
         </button>
       </div>
 
       {showForm && (
-        <ProductForm addProduct={addProduct} />
+        <ProductForm
+          addProduct={addProduct}
+          updateProduct={updateProduct}
+          editingProduct={editingProduct}
+          setEditingProduct={setEditingProduct}
+        />
       )}
 
-      <table className="products-table">
+      <table>
         <thead>
           <tr>
             <th>ID</th>
@@ -88,31 +117,25 @@ export default function ProductsManager() {
         </thead>
 
         <tbody>
-          {products.length === 0 ? (
-            <tr>
-              <td colSpan="6">Товаров пока нет</td>
+          {products.map(p => (
+            <tr key={p.id}>
+              <td>{p.id}</td>
+              <td>{p.title}</td>
+              <td>{p.price}</td>
+              <td>{p.stock}</td>
+              <td>{p.is_active ? 'Активен' : 'Скрыт'}</td>
+
+              <td>
+                <button onClick={() => startEdit(p)}>
+                  Редактировать
+                </button>
+
+                <button onClick={() => deleteProduct(p.id)}>
+                  Удалить
+                </button>
+              </td>
             </tr>
-          ) : (
-            products.map(product => (
-              <tr key={product.id}>
-                <td>{product.id}</td>
-                <td>{product.title}</td>
-                <td>{product.price} ₽</td>
-                <td>{product.stock}</td>
-                <td>
-                  {product.active ? 'В наличии' : 'Скрыт'}
-                </td>
-                <td>
-                  <button
-                    className="delete-btn"
-                    onClick={() => deleteProduct(product.id)}
-                  >
-                    Удалить
-                  </button>
-                </td>
-              </tr>
-            ))
-          )}
+          ))}
         </tbody>
       </table>
 
