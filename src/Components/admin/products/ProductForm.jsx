@@ -86,6 +86,7 @@ const uploadImage = async (file) => {
 
   const formData = new FormData()
   formData.append('image', file)
+  formData.append('type', 'products')
 
   try {
     const res = await axios.post(
