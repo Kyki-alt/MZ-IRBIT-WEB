@@ -102,9 +102,7 @@ export default function News() {
           >
 
             <img
-              src="https://mz-irbit.onrender.com/uploads/news/new-kefir.webp"
-              alt=""
-
+              src={`${API_URL}${item.image}`} alt={item.title}
             />
 
             <h2>{selectedNews.title}</h2>
