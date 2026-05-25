@@ -141,8 +141,8 @@ export default function ProductsManager() {
 
             <div className="product-image">
               {p.img ? (
-                <img src={API_URL + img} />
-              ) : ( 
+                <img src={getImageUrl(p.img)} alt="" />
+              ) : (
                 <div className="no-image">No image</div>
               )}
             </div>
