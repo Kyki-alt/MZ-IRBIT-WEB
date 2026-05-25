@@ -1,37 +1,101 @@
-import React, { useState } from 'react'
+import React, {
+  useEffect,
+  useState
+} from 'react'
+
 import ProductForm from './ProductForm'
+
+import API_URL from '../../../config'
 
 export default function ProductsManager() {
 
   const [products, setProducts] =
     useState([])
 
+    useEffect(() => {
+      fetchProducts()
+    }, [])
+
   const [showForm, setShowForm] =
     useState(false)
 
   const addProduct = (product) => {
 
-    const newProduct = {
-      id: Date.now(),
-      ...product
+    try {
+
+    const response =
+        await fetch(
+          `${API_URL}/api/products`,
+          {
+            method: 'POST',
+
+            headers: {
+              'Content-Type':
+                'application/json'
+            },
+
+            body: JSON.stringify(product)
+          }
+        )
+
+      const data =
+        await response.json()
+
+      setProducts([
+        data,
+        ...products
+      ])
+
+      setShowForm(false)
+
+    } catch (err) {
+
+      console.error(err)
     }
-
-    setProducts([
-      ...products,
-      newProduct
-    ])
-
-    setShowForm(false)
   }
 
   const deleteProduct = (id) => {
 
-    const filtered =
-      products.filter(
-        product => product.id !== id
-      )
+    try {
 
-    setProducts(filtered)
+        await fetch(
+          `${API_URL}/api/products/${id}`,
+          {
+            method: 'DELETE'
+          }
+        )
+
+        const filtered =
+          products.filter(
+            product => product.id !== id
+          )
+
+        setProducts(filtered)
+
+      } catch (err) {
+
+        console.error(err)
+    }
+  }
+
+    const fetchProducts = async () => {
+
+    try {
+
+      const response =
+        await fetch(
+          `${API_URL}/api/products`
+        )
+
+      const data =
+        await response.json()
+
+      setProducts(data)
+
+    } catch (err) {
+
+      console.error(err)
+    }
   }
 
   return (

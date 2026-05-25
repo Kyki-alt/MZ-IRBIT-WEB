@@ -9,12 +9,12 @@ import {
 } from '@pbe/react-yandex-maps'
 
 import axios from 'axios'
+import API_URL from '../config'
 
 export default function News() {
 
   const [selectedNews, setSelectedNews] = useState(null)
   const navigate = useNavigate()
-  const API_URL = 'https://mz-irbit.onrender.com'
   const [news, setNews] = useState([])
   const [loading, setLoading] = useState(true)
 
