@@ -17,12 +17,13 @@ export class Item extends Component {
         <div className='item-image'>
           <img
             src={
-              item.img?.startsWith('http')
-                ? item.img
-                : `https://mz-irbit.onrender.com${item.img.startsWith('/') ? '' : '/'}${item.img}`
+              item.img
+                ? item.img.startsWith('http')
+                  ? item.img
+                  : `https://mz-irbit.onrender.com${item.img.startsWith('/') ? '' : '/'}${item.img}`
+                : '/img/placeholder.png'
             }
-              onClick={() => this.props.onShowItem(item)}
-              alt=""
+            alt=""
           />
         </div>
 
