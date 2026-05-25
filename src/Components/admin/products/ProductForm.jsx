@@ -28,6 +28,7 @@ export default function ProductForm({
       setDescription(editingProduct.description || '')
       setIsActive(editingProduct.is_active ?? true)
       setImg(editingProduct.img || '')
+      setCategoryId(editingProduct.category_id || '')
     } else {
       setTitle('')
       setPrice('')
@@ -57,7 +58,7 @@ const handleSubmit = (e) => {
     stock: Number(stock),
     description,
     is_active,
-    category_id: categoryId,
+    category_id: categoryId ? Number(categoryId) : null,
     img
   }
 
