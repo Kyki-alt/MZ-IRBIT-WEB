@@ -5,9 +5,11 @@ import API_URL from '../../../config'
 export default function ProductsManager() {
 
   const getImageUrl = (img) => {
-    if (!img) return null
+    if (!img) return ''
+
     if (img.startsWith('http')) return img
-    return `${API_URL}${img}`
+
+    return `${API_URL}${img.startsWith('/') ? '' : '/'}${img}`
   }
 
   const [products, setProducts] = useState([])
@@ -134,7 +136,8 @@ export default function ProductsManager() {
       <div className="products-grid">
         {products.map(p => {
 
-          console.log('PRODUCT IMG:', p.img)
+          console.log('IMG RAW:', p.img)
+          console.log('IMG FINAL:', getImageUrl(p.img)) 
 
           return (
             <div className="product-card" key={p.id}>
