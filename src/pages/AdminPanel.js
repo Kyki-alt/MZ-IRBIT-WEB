@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import './AdminPanel.css'
 import { useNavigate } from 'react-router-dom'
-import ProductsManager from '../components/admin/products/ProductsManager'
+import ProductsManager from '../Components/admin/products/ProductsManager'
 
 export default function AdminPanel() {
 
