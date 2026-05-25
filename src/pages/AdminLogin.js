@@ -12,6 +12,7 @@ export default function AdminLogin() {
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
 
   const handleLogin = async () => {
   if (!login || !password) {
