@@ -144,7 +144,7 @@ export default function ProductsManager() {
 
             <div className="product-image">
               {p.img ? (
-                <img src="https://via.placeholder.com/150" />
+                <img src={getImageUrl(p.img)} />
               ) : (
                 <div className="no-image">No image</div>
               )}
