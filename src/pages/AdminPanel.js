@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import './AdminPanel.css'
 import { useNavigate } from 'react-router-dom'
+import ProductsManager from '../components/admin/products/ProductsManager'
 
 export default function AdminPanel() {
 
@@ -21,14 +22,7 @@ export default function AdminPanel() {
     switch (section) {
 
       case 'products':
-        return (
-          <div>
-            <h2>📦 Товары</h2>
-            <p>
-              Здесь будет управление товарами
-            </p>
-          </div>
-        )
+        return <ProductsManager />
 
       case 'orders':
         return (
@@ -158,7 +152,7 @@ export default function AdminPanel() {
           className="logout-btn"
           onClick={handleLogout}
         >
-          🚪 Выйти
+          Выйти
         </button>
 
       </div>
