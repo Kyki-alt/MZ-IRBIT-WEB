@@ -6,85 +6,168 @@ export default function AdminPanel() {
 
   const navigate = useNavigate()
 
-  const [title, setTitle] = useState('')
-  const [price, setPrice] = useState('')
-  const [description, setDescription] =
-    useState('')
+  const [section, setSection] =
+    useState('dashboard')
 
   const handleLogout = () => {
 
-    // удаляем JWT
-    localStorage.removeItem(
-      'adminToken'
-    )
+    localStorage.removeItem('adminToken')
 
-    // отправляем на логин
     navigate('/admin/login')
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
+  const renderContent = () => {
 
-    console.log({
-      title,
-      price,
-      description
-    })
+    switch (section) {
 
-    alert('Товар добавлен')
+      case 'products':
+        return (
+          <div>
+            <h2>📦 Товары</h2>
+            <p>
+              Здесь будет управление товарами
+            </p>
+          </div>
+        )
+
+      case 'orders':
+        return (
+          <div>
+            <h2>🧾 Заказы</h2>
+            <p>
+              Здесь будет список заказов
+            </p>
+          </div>
+        )
+
+      case 'news':
+        return (
+          <div>
+            <h2>📰 Новости</h2>
+            <p>
+              Управление новостями
+            </p>
+          </div>
+        )
+
+      case 'categories':
+        return (
+          <div>
+            <h2>🗂 Категории</h2>
+          </div>
+        )
+
+      case 'settings':
+        return (
+          <div>
+            <h2>⚙️ Настройки</h2>
+          </div>
+        )
+
+      default:
+        return (
+          <div>
+            <h1>Добро пожаловать 👋</h1>
+
+            <p>
+              Выберите раздел слева
+            </p>
+          </div>
+        )
+    }
   }
 
   return (
-    <div className="admin-page">
 
-      <div className="admin-card">
+    <div className="admin-layout">
 
-        <div className="admin-header">
+      {/* SIDEBAR */}
 
-          <h1>Админ панель</h1>
+      <div className="admin-sidebar">
 
-          <button
-            className="logout-btn"
-            onClick={handleLogout}
-          >
-            Выйти
-          </button>
+        <h2 className="admin-logo">
+          Admin Panel
+        </h2>
 
-        </div>
+        <button
+          className={
+            section === 'products'
+              ? 'active'
+              : ''
+          }
+          onClick={() =>
+            setSection('products')
+          }
+        >
+          📦 Товары
+        </button>
 
-        <form onSubmit={handleSubmit}>
+        <button
+          className={
+            section === 'orders'
+              ? 'active'
+              : ''
+          }
+          onClick={() =>
+            setSection('orders')
+          }
+        >
+          🧾 Заказы
+        </button>
 
-          <input
-            type="text"
-            placeholder="Название товара"
-            value={title}
-            onChange={(e) =>
-              setTitle(e.target.value)
-            }
-          />
+        <button
+          className={
+            section === 'news'
+              ? 'active'
+              : ''
+          }
+          onClick={() =>
+            setSection('news')
+          }
+        >
+          📰 Новости
+        </button>
 
-          <input
-            type="number"
-            placeholder="Цена"
-            value={price}
-            onChange={(e) =>
-              setPrice(e.target.value)
-            }
-          />
+        <button
+          className={
+            section === 'categories'
+              ? 'active'
+              : ''
+          }
+          onClick={() =>
+            setSection('categories')
+          }
+        >
+          🗂 Категории
+        </button>
 
-          <textarea
-            placeholder="Описание"
-            value={description}
-            onChange={(e) =>
-              setDescription(e.target.value)
-            }
-          />
+        <button
+          className={
+            section === 'settings'
+              ? 'active'
+              : ''
+          }
+          onClick={() =>
+            setSection('settings')
+          }
+        >
+          ⚙️ Настройки
+        </button>
 
-          <button type="submit">
-            Добавить товар
-          </button>
+        <button
+          className="logout-btn"
+          onClick={handleLogout}
+        >
+          🚪 Выйти
+        </button>
 
-        </form>
+      </div>
+
+      {/* CONTENT */}
+
+      <div className="admin-content">
+
+        {renderContent()}
 
       </div>
 

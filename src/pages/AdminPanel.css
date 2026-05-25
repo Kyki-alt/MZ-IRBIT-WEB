@@ -1,72 +1,83 @@
-.admin-page {
-  min-height: 100vh;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.admin-layout {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #f5f7fb;
+  min-height: 100vh;
+  background: #f3f4f6;
 }
 
-.admin-card {
-  width: 100%;
-  max-width: 500px;
-  background: white;
-  padding: 40px;
-  border-radius: 30px;
-  box-shadow: 0 15px 40px rgba(0,0,0,.1);
-}
+/* SIDEBAR */
 
-.admin-card h1 {
-  text-align: center;
-  margin-bottom: 25px;
-}
+.admin-sidebar {
+  width: 260px;
+  background: #111827;
+  color: white;
 
-.admin-card form {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+
+  padding: 20px;
 }
 
-.admin-card input,
-.admin-card textarea {
-  border: 1px solid #ddd;
-  border-radius: 16px;
-  padding: 15px;
-  font-size: 16px;
-  outline: none;
+.admin-logo {
+  margin-bottom: 40px;
+  font-size: 24px;
 }
 
-.admin-card textarea {
-  resize: none;
-  min-height: 120px;
-}
-
-.admin-card button {
-  height: 55px;
+.admin-sidebar button {
+  background: transparent;
   border: none;
-  border-radius: 16px;
-  background: #42bff5;
+
   color: white;
-  font-size: 16px;
+
+  text-align: left;
+
+  padding: 14px 16px;
+
+  margin-bottom: 10px;
+
+  border-radius: 10px;
+
   cursor: pointer;
+
+  transition: 0.2s;
+
+  font-size: 16px;
 }
 
-.admin-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 25px;
+.admin-sidebar button:hover {
+  background: #1f2937;
+}
+
+.admin-sidebar button.active {
+  background: #2563eb;
 }
 
 .logout-btn {
-  border: none;
-  background: #ef4444;
-  color: white;
-  padding: 12px 18px;
-  border-radius: 12px;
-  cursor: pointer;
-  font-weight: 600;
+  margin-top: auto;
+  background: #dc2626 !important;
 }
 
-.logout-btn:hover {
-  opacity: .9;
+/* CONTENT */
+
+.admin-content {
+  flex: 1;
+
+  padding: 40px;
+
+  overflow-y: auto;
+}
+
+.admin-content h1,
+.admin-content h2 {
+  margin-bottom: 20px;
+}
+
+.admin-content p {
+  color: #555;
+  font-size: 16px;
 }
