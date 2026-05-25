@@ -7,15 +7,16 @@ export default function ProductsManager() {
   const [products, setProducts] = useState([])
   const [showForm, setShowForm] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
+  const [showDeleted, setShowDeleted] = useState(false)
 
   useEffect(() => {
     fetchProducts()
-  }, [])
+  }, [showDeleted])
 
-  const fetchProducts = async (query = '') => {
+  const fetchProducts = async (query = '', deleted = showDeleted) => {
     const url = query
       ? `${API_URL}/api/products/search?q=${query}`
-      : `${API_URL}/api/products`
+      : `${API_URL}/api/products?deleted=${deleted}`
 
     const res = await fetch(url)
     const data = await res.json()
@@ -67,6 +68,14 @@ export default function ProductsManager() {
     setShowForm(true)
   }
 
+  const restoreProduct = async (id) => {
+    await fetch(`${API_URL}/api/products/${id}/restore`, {
+      method: 'PATCH'
+    })
+
+    fetchProducts()
+  } 
+
   return (
     <div>
 
@@ -86,6 +95,16 @@ export default function ProductsManager() {
           }}
         >
           {showForm ? 'Закрыть' : 'Добавить'}
+        </button>
+
+        <button
+          onClick={() => {
+            const newValue = !showDeleted
+            setShowDeleted(newValue)
+            fetchProducts('', newValue)
+          }}
+          >
+          {showDeleted ? 'Активные' : 'Архив'}
         </button>
       </div>
 
@@ -136,6 +155,12 @@ export default function ProductsManager() {
                 <button onClick={() => deleteProduct(p.id)}>
                   Удалить
                 </button>
+
+                {showDeleted && (
+                  <button onClick={() => restoreProduct(p.id)}>
+                    Восстановить
+                  </button>
+                )}
               </td>
             </tr>
           ))}
