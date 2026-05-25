@@ -1,11 +1,26 @@
 import React, { useState } from 'react'
 import './AdminPanel.css'
+import { useNavigate } from 'react-router-dom'
 
 export default function AdminPanel() {
 
+  const navigate = useNavigate()
+
   const [title, setTitle] = useState('')
   const [price, setPrice] = useState('')
-  const [description, setDescription] = useState('')
+  const [description, setDescription] =
+    useState('')
+
+  const handleLogout = () => {
+
+    // удаляем JWT
+    localStorage.removeItem(
+      'adminToken'
+    )
+
+    // отправляем на логин
+    navigate('/admin/login')
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -24,7 +39,18 @@ export default function AdminPanel() {
 
       <div className="admin-card">
 
-        <h1>Админ панель</h1>
+        <div className="admin-header">
+
+          <h1>Админ панель</h1>
+
+          <button
+            className="logout-btn"
+            onClick={handleLogout}
+          >
+            Выйти
+          </button>
+
+        </div>
 
         <form onSubmit={handleSubmit}>
 
