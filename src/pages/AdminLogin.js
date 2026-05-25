@@ -14,46 +14,49 @@ export default function AdminLogin() {
   const [error, setError] = useState('')
 
   const handleLogin = async () => {
+  if (!login || !password) {
+    setError('Заполните все поля')
+    return
+  }
 
-    if (!login || !password) {
-      setError('Заполните все поля')
-      return
-    }
+  try {
+    setLoading(true)
+    setError('')
+    setSuccess('')
 
-    try {
+    const res = await axios.post(
+      'https://mz-irbit.onrender.com/admin/login',
+      {
+        login,
+        password
+      }
+    )
 
-      setLoading(true)
-      setError('')
+    localStorage.setItem(
+      'adminToken',
+      res.data.token
+    )
 
-      const res = await axios.post(
-        'https://mz-irbit.onrender.com/admin/login',
-        {
-          login,
-          password
-        }
-      )
+    // уведомление
+    setSuccess('Вы успешно вошли в админ панель')
 
-      localStorage.setItem(
-        'adminToken',
-        res.data.token
-      )
-
+    // задержка перед переходом
+    setTimeout(() => {
       navigate('/admin')
+    }, 1500)
 
-    } catch (err) {
+  } catch (err) {
 
-  if (err.response?.data?.message) {
-    setError(err.response.data.message)
-  } else {
-    setError('Ошибка сервера')
-  }
-
-    } finally {
-
-      setLoading(false)
-
+    if (err.response?.data?.message) {
+      setError(err.response.data.message)
+    } else {
+      setError('Ошибка сервера')
     }
+
+  } finally {
+    setLoading(false)
   }
+}
 
   return (
 
@@ -83,11 +86,17 @@ export default function AdminLogin() {
           }
         />
 
-        {error && (
-          <p className="error-text">
-            {error}
-          </p>
-        )}
+      {error && (
+        <p className="error-text">
+          {error}
+        </p>
+      )}
+
+      {success && (
+        <p className="success-text">
+          {success}
+        </p>
+      )}
 
         <button
           onClick={handleLogin}

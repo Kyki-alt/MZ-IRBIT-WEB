@@ -13,6 +13,8 @@ import Checkout from './pages/Checkout'
 import News from './pages/News'
 import PaymentResult from './pages/PaymentResult'
 import AdminLogin from './pages/AdminLogin'
+import AdminPanel from './pages/AdminPanel'
+import ProtectedRoute from './components/ProtectedRoute'
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 
@@ -45,6 +47,16 @@ root.render(
     <Route
       path="/admin/login"
       element={<AdminLogin />}
+    />
+
+    {/* Админка */}
+    <Route
+      path="/admin"
+      element={
+        <ProtectedRoute>
+        <AdminPanel />
+        </ProtectedRoute>
+      }
     />
 
   </Routes>
