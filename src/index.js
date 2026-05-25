@@ -14,7 +14,7 @@ import News from './pages/News'
 import PaymentResult from './pages/PaymentResult'
 import AdminLogin from './pages/AdminLogin'
 import AdminPanel from './pages/AdminPanel'
-import ProtectedRoute from './Сomponents/ProtectedRoute'
+import ProtectedRoute from './Components/ProtectedRoute'
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 
