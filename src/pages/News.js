@@ -101,8 +101,8 @@ export default function News() {
           >
 
             <img
-              src={selectedNews.image}
-              alt={selectedNews.title}
+            src={`${API_URL}${selectedNews.image}`}
+            alt={selectedNews.title}
             />
 
             <h2>{selectedNews.title}</h2>
