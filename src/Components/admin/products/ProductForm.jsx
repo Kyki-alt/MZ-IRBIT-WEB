@@ -16,6 +16,7 @@ export default function ProductForm({
   const [img, setImg] = useState('')
   const [categories, setCategories] = useState([])
   const [categoryId, setCategoryId] = useState('')
+  const [imgLoading, setImgLoading] = useState(false)
 
   useEffect(() => {
     if (editingProduct) {
@@ -35,35 +36,35 @@ export default function ProductForm({
     }
   }, [editingProduct])
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
+const handleSubmit = (e) => {
+  e.preventDefault()
 
-    const priceNum = Number(price)
-
-    // 5. цена > 0 (НЕ 0 и НЕ отрицательная)
-    if (priceNum <= 0) {
-      alert('Цена должна быть больше 0')
-      return
-    }
-
-    const payload = {
-      title,
-      price: priceNum,
-      stock: Number(stock),
-      description,
-      is_active,
-      category_id: categoryId,
-      img
-    }
-
-    if (editingProduct) {
-      updateProduct(editingProduct.id, payload)
-    } else {
-      addProduct(payload)
-    }
-
-    setEditingProduct(null)
+  if (imgLoading) {
+    alert('Фото ещё загружается')
+    return
   }
+
+  if (!img) {
+    alert('Добавь фото')
+    return
+  }
+
+  const payload = {
+    title,
+    price: Number(price),
+    stock: Number(stock),
+    description,
+    is_active,
+    category_id: categoryId,
+    img
+  }
+
+  if (editingProduct) {
+    updateProduct(editingProduct.id, payload)
+  } else {
+    addProduct(payload)
+  }
+}
 
   useEffect(() => {
     fetchCategories()
@@ -76,6 +77,8 @@ export default function ProductForm({
   }
 
   const uploadImage = async (file) => {
+  setImgLoading(true)
+
   const formData = new FormData()
   formData.append('image', file)
 
@@ -85,8 +88,14 @@ export default function ProductForm({
   })
 
   const data = await res.json()
+
+  console.log("UPLOAD:", data)
+
   setImg(data.imageUrl)
+  setImgLoading(false)
 }
+
+
 
   return (
     <form className="product-form" onSubmit={handleSubmit}>
@@ -135,6 +144,14 @@ export default function ProductForm({
       type="file"
       onChange={(e) => uploadImage(e.target.files[0])}
       />
+
+      {img && (
+        <img
+          src={img}
+          alt="preview"
+          style={{ width: 100, marginTop: 10, borderRadius: 8 }}
+        />
+      )}
 
       <textarea
         placeholder="Описание"
