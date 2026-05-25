@@ -6,8 +6,18 @@ export default function ProductsManager() {
 
   const getImageUrl = (img) => {
     if (!img) return null
+
     if (img.startsWith('http')) return img
-    return `${API_URL}${img}`
+
+    if (img.startsWith('/uploads')) {
+      return `${API_URL}${img}`
+    }
+
+    if (img.startsWith('uploads')) {
+      return `${API_URL}/${img}`
+    }
+
+    return `${API_URL}/uploads/${img}`
   }
 
   const [products, setProducts] = useState([])
@@ -134,7 +144,7 @@ export default function ProductsManager() {
       <div className="products-grid">
         {products.map(p => {
 
-          console.log('IMG:', p.img)
+          console.log('PRODUCT IMG:', p.img)
 
           return (
             <div className="product-card" key={p.id}>
