@@ -8,15 +8,21 @@ export default function ProductsManager() {
   const [showForm, setShowForm] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
   const [showDeleted, setShowDeleted] = useState(false)
+  const [toast, setToast] = useState(null)
 
   useEffect(() => {
     fetchProducts()
   }, [showDeleted])
 
+
   const fetchProducts = async (query = '', deleted = showDeleted) => {
-    const url = query
-      ? `${API_URL}/api/products/search?q=${query}`
-      : `${API_URL}/api/products?deleted=${deleted}`
+    let url = `${API_URL}/api/products`
+
+    if (query) {
+      url = `${API_URL}/api/products/search?q=${query}&deleted=${deleted}`
+    } else {
+      url = `${API_URL}/api/products?deleted=${deleted}`
+    }
 
     const res = await fetch(url)
     const data = await res.json()
@@ -35,6 +41,7 @@ export default function ProductsManager() {
 
     setProducts(prev => [data, ...prev])
     setShowForm(false)
+    showToast('Товар добавлен')
   }
 
   // UPDATE 
@@ -53,6 +60,7 @@ export default function ProductsManager() {
 
     setEditingProduct(null)
     setShowForm(false)
+    showToast('Товар обновлён')
   }
 
   const deleteProduct = async (id) => {
@@ -61,6 +69,7 @@ export default function ProductsManager() {
     })
 
     setProducts(prev => prev.filter(p => p.id !== id))
+    showToast('Товар удалён', 'error')
   }
 
   const startEdit = (product) => {
@@ -72,9 +81,17 @@ export default function ProductsManager() {
     await fetch(`${API_URL}/api/products/${id}/restore`, {
       method: 'PATCH'
     })
+    showToast('Товар восстановлен')
+    fetchProducts('', showDeleted)
+  }
 
-    fetchProducts()
-  } 
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type })
+
+    setTimeout(() => {
+      setToast(null)
+    }, 2500)
+  }
 
   return (
     <div>
@@ -84,7 +101,7 @@ export default function ProductsManager() {
 
         <input
           placeholder="Поиск товаров..."
-          onChange={(e) => fetchProducts(e.target.value)}
+          onChange={(e) => fetchProducts(e.target.value, showDeleted)}
         />
 
         <button onClick={() => {
@@ -94,11 +111,7 @@ export default function ProductsManager() {
           {showForm ? 'Закрыть' : 'Добавить'}
         </button>
 
-        <button onClick={() => {
-          const newValue = !showDeleted
-          setShowDeleted(newValue)
-          fetchProducts('', newValue)
-        }}>
+        <button onClick={() => setShowDeleted(prev => !prev)}>
           {showDeleted ? 'Активные' : 'Архив'}
         </button>
       </div>
@@ -112,62 +125,49 @@ export default function ProductsManager() {
         />
       )}
 
-      <table className="products-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Название</th>
-            <th>Фото</th>
-            <th>Цена</th>
-            <th>Остаток</th>
-            <th>Статус</th>
-            <th>Действия</th>
-          </tr>
-        </thead>
+      <div className="products-grid">
+        {products.map(p => (
+          <div className="product-card" key={p.id}>
 
-        <tbody>
-          {products.map(p => (
-            <tr key={p.id}>
-              <td>{p.id}</td>
-              <td>{p.title}</td>
+            <div className="product-image">
+              {p.img ? (
+                <img src={p.img} alt="" />
+              ) : (
+                <div className="no-image">No image</div>
+              )}
+            </div>
 
-              <td>
-                {p.img
-                  ? <img src={p.img} alt="" style={{ width: 50 }} />
-                  : '—'
-                }
-              </td>
+            <div className="product-info">
+              <h3>{p.title}</h3>
 
-              <td>{p.price} ₽</td>
-              <td>{p.stock}</td>
-              <td>
-                {p.is_active ? (
-                  <span className="status-active">Активен</span>
-                ) : (
-                  <span className="status-hidden">Скрыт</span>
-                )}
-              </td>
+              <p className="price">{p.price} ₽</p>
 
-              <td>
-                <button onClick={() => startEdit(p)}>
-                  Редактировать
+              <p className="stock">
+                Остаток: {p.stock}
+              </p>
+
+              <p className={p.is_active ? 'status-active' : 'status-hidden'}>
+                {p.is_active ? 'Активен' : 'Скрыт'}
+              </p>
+            </div>
+
+            <div className="product-actions">
+              <button onClick={() => startEdit(p)}>Редактировать</button>
+
+              <button onClick={() => deleteProduct(p.id)}>
+                Удалить
+              </button>
+
+              {showDeleted && (
+                <button onClick={() => restoreProduct(p.id)}>
+                  Восстановить
                 </button>
+              )}
+            </div>
 
-                <button onClick={() => deleteProduct(p.id)}>
-                  Удалить
-                </button>
-
-                {showDeleted && (
-                  <button onClick={() => restoreProduct(p.id)}>
-                    Восстановить
-                  </button>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
