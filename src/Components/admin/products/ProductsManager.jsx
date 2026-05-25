@@ -12,68 +12,54 @@ export default function ProductsManager() {
     fetchProducts()
   }, [])
 
-  const fetchProducts = async () => {
-    try {
-      const res = await fetch(`${API_URL}/api/products`)
-      const data = await res.json()
-      setProducts(data)
-    } catch (e) {
-      console.error(e)
-    }
+  const fetchProducts = async (query = '') => {
+    const url = query
+      ? `${API_URL}/api/products/search?q=${query}`
+      : `${API_URL}/api/products`
+
+    const res = await fetch(url)
+    const data = await res.json()
+    setProducts(data)
   }
 
   // CREATE
   const addProduct = async (product) => {
-    try {
-      const res = await fetch(`${API_URL}/api/products`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(product)
-      })
+    const res = await fetch(`${API_URL}/api/products`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(product)
+    })
 
-      const data = await res.json()
-      setProducts([data, ...products])
-      setShowForm(false)
+    const data = await res.json()
 
-    } catch (e) {
-      console.error(e)
-    }
+    setProducts(prev => [data, ...prev])
+    setShowForm(false)
   }
 
-  // UPDATE
+  // UPDATE (4. НЕ СОЗДАЁТ НОВУЮ СТРОКУ)
   const updateProduct = async (id, product) => {
-    try {
-      const res = await fetch(`${API_URL}/api/products/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(product)
-      })
+    const res = await fetch(`${API_URL}/api/products/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(product)
+    })
 
-      const data = await res.json()
+    const data = await res.json()
 
-      setProducts(products.map(p =>
-        p.id === id ? data : p
-      ))
+    setProducts(prev =>
+      prev.map(p => p.id === id ? data : p)
+    )
 
-      setEditingProduct(null)
-      setShowForm(false)
-
-    } catch (e) {
-      console.error(e)
-    }
+    setEditingProduct(null)
+    setShowForm(false)
   }
 
-  // DELETE
   const deleteProduct = async (id) => {
-    try {
-      await fetch(`${API_URL}/api/products/${id}`, {
-        method: 'DELETE'
-      })
+    await fetch(`${API_URL}/api/products/${id}`, {
+      method: 'DELETE'
+    })
 
-      setProducts(products.filter(p => p.id !== id))
-    } catch (e) {
-      console.error(e)
-    }
+    setProducts(prev => prev.filter(p => p.id !== id))
   }
 
   const startEdit = (product) => {
@@ -87,10 +73,18 @@ export default function ProductsManager() {
       <div className="products-header">
         <h2>📦 Товары</h2>
 
-        <button onClick={() => {
-          setShowForm(!showForm)
-          setEditingProduct(null)
-        }}>
+        <input
+          placeholder="Поиск товаров..."
+          onChange={(e) => fetchProducts(e.target.value)}
+        />
+
+        <button
+          className="add-product-btn"
+          onClick={() => {
+            setShowForm(!showForm)
+            setEditingProduct(null)
+          }}
+        >
           {showForm ? 'Закрыть' : 'Добавить'}
         </button>
       </div>
@@ -104,11 +98,12 @@ export default function ProductsManager() {
         />
       )}
 
-      <table>
+      <table className="products-table">
         <thead>
           <tr>
             <th>ID</th>
             <th>Название</th>
+            <th>Фото</th>
             <th>Цена</th>
             <th>Остаток</th>
             <th>Статус</th>
@@ -121,7 +116,15 @@ export default function ProductsManager() {
             <tr key={p.id}>
               <td>{p.id}</td>
               <td>{p.title}</td>
-              <td>{p.price}</td>
+
+              <td>
+                {p.img
+                  ? <img src={p.img} alt="" style={{ width: 50 }} />
+                  : '—'
+                }
+              </td>
+
+              <td>{p.price} ₽</td>
               <td>{p.stock}</td>
               <td>{p.is_active ? 'Активен' : 'Скрыт'}</td>
 
