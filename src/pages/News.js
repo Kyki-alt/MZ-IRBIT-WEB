@@ -76,7 +76,7 @@ export default function News() {
             onClick={() => setSelectedNews(item)}
           >
 
-            <img src={`${API_URL}${item.img}`} alt={item.title}  />
+            <img src={`${API_URL}${item.image}`} alt={item.title}  />
 
             <div className="news-info">
               <h3>{item.title}</h3>
@@ -88,6 +88,7 @@ export default function News() {
 
       </div>
 
+      console.log(selectedNews)
       {selectedNews && ( 
 
         <div
