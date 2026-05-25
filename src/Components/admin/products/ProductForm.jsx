@@ -41,7 +41,15 @@ export default function ProductForm({
 const handleSubmit = (e) => {
   e.preventDefault()
 
-  if (imgLoading) return
+  if (imgLoading) {
+    alert('Фото ещё загружается')
+    return
+  }
+
+  if (!img) {
+    alert('Сначала загрузите фото')
+    return
+  }
 
   const payload = {
     title,
