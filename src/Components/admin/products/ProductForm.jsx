@@ -186,11 +186,9 @@ const uploadImage = async (file) => {
 
     {/* PREVIEW */}
     {img && (
-      <img
-        src={img}
-        alt="preview"
-        style={{ width: 100, marginTop: 10, borderRadius: 8 }}
-      />
+      <div style={{ marginTop: 10 }}>
+        <img src={img} alt="preview" />
+      </div>
     )}
 
       <textarea

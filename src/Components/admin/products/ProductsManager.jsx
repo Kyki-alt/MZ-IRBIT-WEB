@@ -87,23 +87,18 @@ export default function ProductsManager() {
           onChange={(e) => fetchProducts(e.target.value)}
         />
 
-        <button
-          className="add-product-btn"
-          onClick={() => {
-            setShowForm(!showForm)
-            setEditingProduct(null)
-          }}
-        >
+        <button onClick={() => {
+          setShowForm(!showForm)
+          setEditingProduct(null)
+        }}>
           {showForm ? 'Закрыть' : 'Добавить'}
         </button>
 
-        <button
-          onClick={() => {
-            const newValue = !showDeleted
-            setShowDeleted(newValue)
-            fetchProducts('', newValue)
-          }}
-          >
+        <button onClick={() => {
+          const newValue = !showDeleted
+          setShowDeleted(newValue)
+          fetchProducts('', newValue)
+        }}>
           {showDeleted ? 'Активные' : 'Архив'}
         </button>
       </div>
@@ -145,7 +140,13 @@ export default function ProductsManager() {
 
               <td>{p.price} ₽</td>
               <td>{p.stock}</td>
-              <td>{p.is_active ? 'Активен' : 'Скрыт'}</td>
+              <td>
+                {p.is_active ? (
+                  <span className="status-active">Активен</span>
+                ) : (
+                  <span className="status-hidden">Скрыт</span>
+                )}
+              </td>
 
               <td>
                 <button onClick={() => startEdit(p)}>
