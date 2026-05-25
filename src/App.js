@@ -55,7 +55,7 @@ class App extends React.Component {
       // товары
       const productsResponse =
         await axios.get(
-          'https://mz-irbit.onrender.com/products'
+          'https://mz-irbit.onrender.com/api/products'
         )
 
       // категории
