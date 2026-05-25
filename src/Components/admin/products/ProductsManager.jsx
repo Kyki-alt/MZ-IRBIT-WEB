@@ -93,12 +93,6 @@ export default function ProductsManager() {
     }, 2500)
   }
 
-  const imgUrl = p.img
-  ? p.img.startsWith('http')
-    ? p.img
-    : `${API_URL}${p.img}`
-  : null
-
   return (
     <div>
 
@@ -132,47 +126,56 @@ export default function ProductsManager() {
       )}
 
       <div className="products-grid">
-        {products.map(p => (
-          <div className="product-card" key={p.id}>
+        {products.map(p => {
 
-            <div className="product-image">
-              {imgUrl ? (
-                <img src={imgUrl} alt="" />
-              ) : (
-                <div className="no-image">No image</div>
-              )}
-            </div>
+          const imgUrl = p.img
+            ? p.img.startsWith('http')
+              ? p.img
+              : `${API_URL}${p.img}`
+            : null
 
-            <div className="product-info">
-              <h3>{p.title}</h3>
+          return (
+            <div className="product-card" key={p.id}>
 
-              <p className="price">{p.price} ₽</p>
+              <div className="product-image">
+                {imgUrl ? (
+                  <img src={imgUrl} alt="" />
+                ) : (
+                  <div className="no-image">No image</div>
+                )}
+              </div>
 
-              <p className="stock">
-                Остаток: {p.stock}
-              </p>
+              <div className="product-info">
+                <h3>{p.title}</h3>
 
-              <p className={p.is_active ? 'status-active' : 'status-hidden'}>
-                {p.is_active ? 'Активен' : 'Скрыт'}
-              </p>
-            </div>
+                <p className="price">{p.price} ₽</p>
 
-            <div className="product-actions">
-              <button onClick={() => startEdit(p)}>Редактировать</button>
+                <p className="stock">
+                  Остаток: {p.stock}
+                </p>
 
-              <button onClick={() => deleteProduct(p.id)}>
-                Удалить
-              </button>
+                <p className={p.is_active ? 'status-active' : 'status-hidden'}>
+                  {p.is_active ? 'Активен' : 'Скрыт'}
+                </p>
+              </div>
 
-              {showDeleted && (
-                <button onClick={() => restoreProduct(p.id)}>
-                  Восстановить
+              <div className="product-actions">
+                <button onClick={() => startEdit(p)}>Редактировать</button>
+
+                <button onClick={() => deleteProduct(p.id)}>
+                  Удалить
                 </button>
-              )}
-            </div>
 
-          </div>
-        ))}
+                {showDeleted && (
+                  <button onClick={() => restoreProduct(p.id)}>
+                    Восстановить
+                  </button>
+                )}
+              </div>
+
+            </div>
+          )
+        })}
       </div>
     </div>
   )
