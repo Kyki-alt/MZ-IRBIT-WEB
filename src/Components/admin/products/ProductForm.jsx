@@ -36,6 +36,7 @@ export default function ProductForm({
       setDescription('')
       setIsActive(true)
       setImg('')
+      setCategoryId('')
     }
   }, [editingProduct])
 
