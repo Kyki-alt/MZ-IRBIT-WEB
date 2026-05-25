@@ -4,6 +4,12 @@ import API_URL from '../../../config'
 
 export default function ProductsManager() {
 
+  const getImageUrl = (img) => {
+    if (!img) return null
+    if (img.startsWith('http')) return img
+    return `${API_URL}${img}`
+  }
+
   const [products, setProducts] = useState([])
   const [showForm, setShowForm] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
@@ -128,22 +134,18 @@ export default function ProductsManager() {
       <div className="products-grid">
         {products.map(p => {
 
-          const imgUrl = p.img
-            ? p.img.startsWith('http')
-              ? p.img
-              : `${API_URL}${p.img}`
-            : null
+          console.log('IMG:', p.img)
 
           return (
             <div className="product-card" key={p.id}>
 
-              <div className="product-image">
-                {imgUrl ? (
-                  <img src={imgUrl} alt="" />
-                ) : (
-                  <div className="no-image">No image</div>
-                )}
-              </div>
+            <div className="product-image">
+              {p.img ? (
+                <img src={API_URL + img} />
+              ) : ( 
+                <div className="no-image">No image</div>
+              )}
+            </div>
 
               <div className="product-info">
                 <h3>{p.title}</h3>
