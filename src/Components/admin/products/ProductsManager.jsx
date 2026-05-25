@@ -93,6 +93,12 @@ export default function ProductsManager() {
     }, 2500)
   }
 
+  const imgUrl = p.img
+  ? p.img.startsWith('http')
+    ? p.img
+    : `${API_URL}${p.img}`
+  : null
+
   return (
     <div>
 
@@ -130,8 +136,8 @@ export default function ProductsManager() {
           <div className="product-card" key={p.id}>
 
             <div className="product-image">
-              {p.img ? (
-                <img src={p.img} alt="" />
+              {imgUrl ? (
+                <img src={imgUrl} alt="" />
               ) : (
                 <div className="no-image">No image</div>
               )}
