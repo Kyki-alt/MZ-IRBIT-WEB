@@ -89,21 +89,21 @@ const uploadImage = async (file) => {
   formData.append('type', 'products')
 
   try {
-    const res = await axios.post(
-      `${API_URL}/api/products/upload`,
-      formData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        },
-        onUploadProgress: (progressEvent) => {
-          const percent = Math.round(
-            (progressEvent.loaded * 100) / progressEvent.total
-          )
-          setUploadProgress(percent)
+      const res = await axios.post(
+        `${API_URL}/api/products/upload?type=products`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
+          onUploadProgress: (progressEvent) => {
+            const percent = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            )
+            setUploadProgress(percent)
+          }
         }
-      }
-    )
+      )
 
     setImg(res.data.imageUrl)
 
