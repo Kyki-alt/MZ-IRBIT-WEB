@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import API_URL from '../../../config'
+import axios from 'axios'
 
 export default function ProductForm({
   addProduct,
@@ -17,6 +18,7 @@ export default function ProductForm({
   const [categories, setCategories] = useState([])
   const [categoryId, setCategoryId] = useState('')
   const [imgLoading, setImgLoading] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
 
   useEffect(() => {
     if (editingProduct) {
@@ -39,10 +41,7 @@ export default function ProductForm({
 const handleSubmit = (e) => {
   e.preventDefault()
 
-  if (imgLoading) {
-    alert('Фото ещё загружается')
-    return
-  }
+  if (imgLoading) return
 
   if (!img) {
     alert('Добавь фото')
@@ -76,23 +75,37 @@ const handleSubmit = (e) => {
     setCategories(data)
   }
 
-  const uploadImage = async (file) => {
+const uploadImage = async (file) => {
   setImgLoading(true)
+  setUploadProgress(0)
 
   const formData = new FormData()
   formData.append('image', file)
 
-  const res = await fetch(`${API_URL}/api/products/upload`, {
-    method: 'POST',
-    body: formData
-  })
+  try {
+    const res = await axios.post(
+      `${API_URL}/api/products/upload`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        onUploadProgress: (progressEvent) => {
+          const percent = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          )
+          setUploadProgress(percent)
+        }
+      }
+    )
 
-  const data = await res.json()
+    setImg(res.data.imageUrl)
 
-  console.log("UPLOAD:", data)
-
-  setImg(data.imageUrl)
-  setImgLoading(false)
+  } catch (err) {
+    console.error('Upload error:', err)
+  } finally {
+    setImgLoading(false)
+  }
 }
 
 
@@ -139,19 +152,41 @@ const handleSubmit = (e) => {
         min="0"
       />
 
-      {/* 2. ФОТО ТОВАРА */}
-      <input
+    {/* 2. ФОТО ТОВАРА */}
+    <input
       type="file"
       onChange={(e) => uploadImage(e.target.files[0])}
-      />
+    />
 
-      {img && (
-        <img
-          src={img}
-          alt="preview"
-          style={{ width: 100, marginTop: 10, borderRadius: 8 }}
+    {/* 🔥 PROGRESS BAR */}
+    {imgLoading && (
+      <div style={{
+        width: '100%',
+        height: 8,
+        background: '#eee',
+        borderRadius: 5,
+        marginTop: 10
+      }}>
+        <div
+          style={{
+            width: `${uploadProgress}%`,
+            height: '100%',
+            background: '#4caf50',
+            borderRadius: 5,
+            transition: 'width 0.2s'
+          }}
         />
-      )}
+      </div>
+    )}
+
+    {/* PREVIEW */}
+    {img && (
+      <img
+        src={img}
+        alt="preview"
+        style={{ width: 100, marginTop: 10, borderRadius: 8 }}
+      />
+    )}
 
       <textarea
         placeholder="Описание"

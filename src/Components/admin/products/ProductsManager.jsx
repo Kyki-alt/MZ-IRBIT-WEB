@@ -36,7 +36,7 @@ export default function ProductsManager() {
     setShowForm(false)
   }
 
-  // UPDATE (4. НЕ СОЗДАЁТ НОВУЮ СТРОКУ)
+  // UPDATE 
   const updateProduct = async (id, product) => {
     const res = await fetch(`${API_URL}/api/products/${id}`, {
       method: 'PUT',
