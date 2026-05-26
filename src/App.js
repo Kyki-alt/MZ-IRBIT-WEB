@@ -44,16 +44,13 @@ class App extends React.Component {
   // Загрузка данных с backend
   async componentDidMount() {
 
-    // загружаем корзину
-      const savedOrders =
-          JSON.parse(
-            localStorage.getItem('cart')
-          ) || []
+  const savedOrders =
+    JSON.parse(localStorage.getItem('cart')) || []
 
     try {
 
-      // товары
-      const productsResponse =
+    // товары
+    const productsResponse =
         await axios.get(
           'https://mz-irbit.onrender.com/api/products'
         )
@@ -64,19 +61,46 @@ class App extends React.Component {
           'https://mz-irbit.onrender.com/categories'
         )
 
-      this.setState({
+      const products = productsResponse.data
+      const categories = categoriesResponse.data
 
-        orders: savedOrders,
+      // 🔥 СИНХРОНИЗАЦИЯ КОРЗИНЫ СО СКЛАДОМ
+      const syncedOrders = savedOrders.map(item => {
+        const liveProduct = products.find(p => p.id === item.id)
 
-        items:
-          productsResponse.data,
+        if (!liveProduct) {
+          return { ...item, disabled: true, quantity: 0 }
+        }
 
-        currentItems:
-          productsResponse.data,
+        if (liveProduct.stock <= 0) {
+          return { ...item, disabled: true, quantity: 0 }
+        }
 
-        categories:
-          categoriesResponse.data
+        if (item.quantity > liveProduct.stock) {
+          return {
+            ...item,
+            quantity: liveProduct.stock
+          }
+        }
+
+        return {
+          ...item,
+          stock: liveProduct.stock
+        }
       })
+
+      this.setState({
+        orders: syncedOrders,
+        items: products,
+        currentItems: products,
+        categories: categories
+      })
+
+      // 💾 ОБНОВЛЯЕМ localStorage
+      localStorage.setItem(
+        'cart',
+        JSON.stringify(syncedOrders)
+      )
 
     } catch (error) {
 

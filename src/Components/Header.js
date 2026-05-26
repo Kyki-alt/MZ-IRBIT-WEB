@@ -28,6 +28,10 @@ export default function Header(props) {
     0
   )
 
+  const hasValidItems = props.orders.some(
+    item => !item.disabled && item.quantity > 0
+  )
+
   return (
   <header>
 
@@ -106,21 +110,27 @@ export default function Header(props) {
       <div className="buy-button-wrapper" id="buy-btn-main">
         <div className="">
             <div>
-                <button className="base-ui-button_JKH base-ui-button_big_rMI base-ui-button_brand_avQ base-ui-button_ico-none_M-8 buy-button"
+                <button
+                  className="base-ui-button_JKH base-ui-button_big_rMI base-ui-button_brand_avQ base-ui-button_ico-none_M-8 buy-button"
                   onClick={() => {
+                    if (!hasValidItems) return
 
-                  localStorage.setItem(
-                    'cart',
-                    JSON.stringify(props.orders)
-                  )
+                    localStorage.setItem(
+                      'cart',
+                      JSON.stringify(props.orders)
+                    )
 
-                  navigate('/checkout')
-                }}
-                >
+                    navigate('/checkout')
+                  }}
+                  disabled={!hasValidItems}
+                  >
                   <div className="base-ui-button__ico_1Mx">
                     <div className="buy-button__icon"></div>
                   </div>
-                  <span className="base-ui-button__text_6Sd">Перейти к оформлению</span>
+
+                  <span className="base-ui-button__text_6Sd">
+                    Перейти к оформлению
+                  </span>
                 </button>
               </div>
             </div>
