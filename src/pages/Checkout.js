@@ -26,6 +26,7 @@ export default function Checkout() {
   const [addressError, setAddressError] = useState('')
   const [cartItems, setCartItems] = useState([])
   const [loading, setLoading] = useState(false)
+  const [validatedCart, setValidatedCart] = useState([])
 
   const getPaymentClass = (type) =>
   payment === type ? 'payment active-payment' : 'payment';
@@ -269,25 +270,22 @@ export default function Checkout() {
       return Object.keys(newErrors).length === 0
     }
   }
-    const handleOrder = async () => {
+  const handleOrder = async () => {
+    if (loading) return
+    setLoading(true)
 
-      if (loading) return
-      setLoading(true)
+    if (!validate()) {
+      setLoading(false)
+      return
+    }
 
-      if (!validate()) {
-        setLoading(false)
-        return
-      }
-
-      // Проверка адреса
+    // -------------------------
+    // 1. проверка адреса
+    // -------------------------
     if (delivery === 'delivery') {
-
       try {
-
         const normalizedCity =
-          city
-            .replace('г. ', '')
-            .trim()
+          city.replace('г. ', '').trim()
 
         const normalizedStreet =
           street
@@ -299,235 +297,194 @@ export default function Checkout() {
         const fullAddress =
           `${normalizedCity}, ${normalizedStreet}, ${house}`
 
-        console.log(fullAddress)
-
         const response = await fetch(
           `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullAddress)}`
         )
 
-        const result =
-          await response.json()
-
-        console.log(result)
+        const result = await response.json()
 
         if (!result.length) {
+          setAddressError('Адрес не найден')
+          setLoading(false)
+          return
+        }
 
-        setAddressError(
-          'Адрес не найден'
-        )
+        const foundAddress =
+          result[0].display_name.toLowerCase()
 
-        return
-      }
+        if (!foundAddress.includes(house.toLowerCase().trim())) {
+          setAddressError('Дом не найден')
+          setLoading(false)
+          return
+        }
 
-      const foundAddress =
-        result[0]
-          .display_name
-          .toLowerCase()
-
-      const normalizedHouse =
-        house.toLowerCase().trim()
-
-      // проверка номера дома
-      if (
-        !foundAddress.includes(normalizedHouse)
-      ) {
-
-        setAddressError(
-          'Дом не найден'
-        )
-
-        return
-      }
-
-      setAddressError('')
-
+        setAddressError('')
       } catch (error) {
-
         console.log(error)
         setLoading(false)
-        setAddressError(
-          'Ошибка проверки адреса'
-        )
-
+        setAddressError('Ошибка проверки адреса')
         return
       }
     }
 
-      // Проверка оплаты
-      if (!payment) {
-
-        setPaymentError(
-          'Выберите способ оплаты'
-        )
-
-        return
-      }
-
-      setPaymentError('')
-
-      // 🔥 проверка корзины перед оформлением
-try {
-  const validateResponse = await fetch(
-    'https://mz-irbit.onrender.com/cart/validate',
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        items: cartItems
-      })
-    }
-  )
-
-  const validateData = await validateResponse.json()
-
-    if (!validateResponse.ok) {
+    // -------------------------
+    // 2. проверка оплаты
+    // -------------------------
+    if (!payment) {
+      setPaymentError('Выберите способ оплаты')
       setLoading(false)
-
-      // можно показать первую ошибку
-      setAddressError(
-        validateData.errors?.[0]?.message ||
-        'Товара нет в наличии'
-      )
-
       return
     }
 
-  } catch (error) {
-    console.log(error)
+    setPaymentError('')
 
-    setLoading(false)
-    setAddressError('Ошибка проверки корзины')
+    // -------------------------
+    // 3. проверка корзины
+    // -------------------------
+    let validateData
 
-    return
-  }
-
-      const orderResponse = await fetch(
-
-        'https://mz-irbit.onrender.com/orders',
-
+    try {
+      const validateResponse = await fetch(
+        'https://mz-irbit.onrender.com/cart/validate',
         {
-
           method: 'POST',
-
           headers: {
-            'Content-Type':
-              'application/json'
+            'Content-Type': 'application/json'
           },
-
           body: JSON.stringify({
-
-            customer_name: name,
-            phone,
-            email,
-
-            delivery_type: delivery,
-            payment_type: payment,
-
-            city,
-            street,
-            house,
-            flat,
-
-            total_price: totalPrice,
-
             items: cartItems
           })
         }
       )
 
-      const orderData =
-        await orderResponse.json()
+      validateData = await validateResponse.json()
+    } catch (error) {
+      console.log(error)
+      setLoading(false)
+      setAddressError('Ошибка проверки корзины')
+      return
+    }
 
-      const orderId =
-        orderData.orderId
+    // -------------------------
+    // 4. обновляем корзину
+    // -------------------------
+    const updatedCart = cartItems.map(item => {
+      const check = validateData.items?.find(i => i.id === item.id)
 
-      // ОПЛАТА ПРИ ПОЛУЧЕНИИ
-      if (payment === 'cash') {
+      if (!check) return item
 
+      if (check.status === 'out_of_stock') {
+        return { ...item, disabled: true, quantity: 0 }
+      }
+
+      if (check.status === 'partial') {
+        return { ...item, quantity: check.available }
+      }
+
+      return item
+    })
+
+    setCartItems(updatedCart)
+    localStorage.setItem('cart', JSON.stringify(updatedCart))
+
+    const validItems = updatedCart.filter(
+      item => !item.disabled && item.quantity > 0
+    )
+
+    if (validItems.length === 0) {
+      setLoading(false)
+      setAddressError('Нет товаров для покупки')
+      return
+    }
+
+    // -------------------------
+    // 5. создаём заказ
+    // -------------------------
+    const orderResponse = await fetch(
+      'https://mz-irbit.onrender.com/orders',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          customer_name: name,
+          phone,
+          email,
+          delivery_type: delivery,
+          payment_type: payment,
+          city,
+          street,
+          house,
+          flat,
+          total_price: totalPrice,
+          items: validItems
+        })
+      }
+    )
+
+    const orderData = await orderResponse.json()
+    const orderId = orderData.orderId
+
+    // -------------------------
+    // 6. оплата при получении
+    // -------------------------
+    if (payment === 'cash') {
       localStorage.removeItem('cart')
 
       window.location.href =
-      `/#/payment-result?status=cod&orderId=${orderId}`
+        `/#/payment-result?status=cod&orderId=${orderId}`
 
       return
-      }
-
-      // цена в рублях
-      const rubAmount = totalPrice
-
-      // получаем курс USD
-      const response = await fetch(
-        'https://open.er-api.com/v6/latest/RUB'
-      )
-
-      const data = await response.json()
-
-      // курс RUB → USD
-      const usdRate = data.rates.USD
-
-      // конвертация
-      const usdAmount =
-        (rubAmount * usdRate).toFixed(2)
-
-      // WebMoney
-      if (payment === 'wm') {
-
-        const form =
-          document.createElement('form')
-
-        form.method = 'POST'
-
-        form.action =
-          'https://merchant.webmoney.ru/lmi/payment.asp'
-
-        const fields = {
-          LMI_PAYEE_PURSE:
-            'Z084048337634',
-
-          LMI_PAYMENT_AMOUNT:
-            usdAmount,
-
-          LMI_PAYMENT_NO:
-            orderId,
-
-          LMI_RESULT_URL:
-          'https://mz-irbit.onrender.com/payment/webmoney/result',
-
-          LMI_SUCCESS_URL:
-          `https://mz-irbit.onrender.com/payment/success?orderId=${orderId}`,
-
-          LMI_FAIL_URL:
-          `https://mz-irbit.onrender.com/payment/fail?orderId=${orderId}`,
-
-          LMI_PAYMENT_DESC_BASE64:
-            btoa(
-              unescape(
-                encodeURIComponent(
-                  'Оплата заказа'
-                )
-              )
-            )
-        }
-
-        for (const key in fields) {
-
-          const input =
-            document.createElement('input')
-
-          input.type = 'hidden'
-          input.name = key
-          input.value = fields[key]
-
-          form.appendChild(input)
-        }
-
-        document.body.appendChild(form)
-
-        form.submit()
-      }
     }
+
+    // -------------------------
+    // 7. WebMoney
+    // -------------------------
+    const rubAmount = totalPrice
+
+    const rateResponse = await fetch(
+      'https://open.er-api.com/v6/latest/RUB'
+    )
+
+    const rateData = await rateResponse.json()
+
+    const usdRate = rateData.rates.USD
+    const usdAmount = (rubAmount * usdRate).toFixed(2)
+
+    if (payment === 'wm') {
+      const form = document.createElement('form')
+      form.method = 'POST'
+      form.action =
+        'https://merchant.webmoney.ru/lmi/payment.asp'
+
+      const fields = {
+        LMI_PAYEE_PURSE: 'Z084048337634',
+        LMI_PAYMENT_AMOUNT: usdAmount,
+        LMI_PAYMENT_NO: orderId,
+        LMI_RESULT_URL:
+          'https://mz-irbit.onrender.com/payment/webmoney/result',
+        LMI_SUCCESS_URL:
+          `https://mz-irbit.onrender.com/payment/success?orderId=${orderId}`,
+        LMI_FAIL_URL:
+          `https://mz-irbit.onrender.com/payment/fail?orderId=${orderId}`,
+        LMI_PAYMENT_DESC_BASE64: btoa(
+          unescape(encodeURIComponent('Оплата заказа'))
+        )
+      }
+
+      Object.entries(fields).forEach(([key, value]) => {
+        const input = document.createElement('input')
+        input.type = 'hidden'
+        input.name = key
+        input.value = value
+        form.appendChild(input)
+      })
+
+      document.body.appendChild(form)
+      form.submit()
+    }
+  }
 
     return (
       <div className="checkout">

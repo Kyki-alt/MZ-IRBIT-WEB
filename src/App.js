@@ -261,7 +261,7 @@ class App extends React.Component {
             : item
         )
 
-        // 🚀 удаляем если 0
+        // удаляем если 0
         .filter(
           item => item.quantity > 0
         )
