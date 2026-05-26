@@ -1,102 +1,65 @@
-import React, { Component } from 'react'
+return (
+  <div className='item'>
 
-export class Item extends Component {
+    <div className='item-image'>
+      <img
+        src={getImageUrl(item.img)}
+        alt=""
+      />
+    </div>
 
-  render() {
+    <div className='item-info'>
 
-    const item = this.props.item
+      <h2>{item.title}</h2>
 
-    // Проверяем есть ли товар в корзине
-    const orderItem = this.props.orders.find(
-      el => el.id === item.id
-    )
+      <b>{item.price}₽</b>
 
-    const getImageUrl = (img) => {
-      if (!img) {
-        return '/img/placeholder.png'
-      }
+      {item.stock <= 0 ? (
 
-      if (img.startsWith('http')) {
-        return img
-      }
-
-      const clean = img.replace(/^undefined/, '')
-
-      // старые товары без uploads/
-      if (
-        !clean.startsWith('/uploads')
-      ) {
-        return `https://mz-irbit.onrender.com/uploads/products/${clean}`
-      }
-
-      return `https://mz-irbit.onrender.com${clean}`
-    }
-
-    return (
-      <div className='item'>
-
-        <div className='item-image'>
-          <img
-            src={getImageUrl(item.img)}
-            alt=""
-          />
+        <div className="out-of-stock">
+          Нет в наличии
         </div>
 
-        <div className='item-info'>
-          <h2>{item.title}</h2>
+      ) : !orderItem ? (
 
-          <b>{item.price}₽</b>
-
-          {item.stock <= 0 && (
-            <div className="out-of-stock">
-              Нет в наличии
-            </div>
-          )}
+        <div
+          className='add-to-cart'
+          onClick={() => this.props.onAdd(item)}
+        >
+          +
         </div>
 
-        {!orderItem && item.stock > 0 ? (
+      ) : (
 
-          <div
-            className='add-to-cart'
-            onClick={() => this.props.onAdd(item)}
+        <div className='card-quantity-controls'>
+
+          <button
+            className='card-quantity-btn'
+            onClick={() =>
+              this.props.decreaseQuantity(item.id)
+            }
+          >
+            -
+          </button>
+
+          <span className='card-quantity-value'>
+            {orderItem.quantity}
+          </span>
+
+          <button
+            className='card-quantity-btn'
+            onClick={() =>
+              this.props.increaseQuantity(item.id)
+            }
           >
             +
-          </div>
+          </button>
 
-        ) : (
+        </div>
 
-          /* ЕСЛИ товар уже добавлен */
-          <div className='card-quantity-controls'>
+      )}
 
-            <button
-              className='card-quantity-btn'
-              onClick={() =>
-                this.props.decreaseQuantity(item.id)
-              }
-            >
-              -
-            </button>
+    </div>
 
-            <span className='card-quantity-value'>
-              {orderItem?.quantity || 0}
-            </span>
-
-            <button
-              className='card-quantity-btn'
-              onClick={() =>
-                this.props.increaseQuantity(item.id)
-              }
-            >
-              +
-            </button>
-
-          </div>
-
-        )}
-
-      </div>
-    )
-  }
-}
-
-export default Item
+  </div>
+)
