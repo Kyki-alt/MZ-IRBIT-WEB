@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import './AdminPanel.css'
 import { useNavigate } from 'react-router-dom'
 import ProductsManager from '../Components/admin/products/ProductsManager'
-import OrdersManager from '../Components/admin/orders/OrdersManager'
+import OrdersManager from '../Components/admin/OrdersManager'
 
 export default function AdminPanel() {
 
