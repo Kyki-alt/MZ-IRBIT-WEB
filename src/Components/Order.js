@@ -16,9 +16,14 @@ export class Order extends Component {
 
       const clean = img.replace(/^undefined/, '')
 
-      return `https://mz-irbit.onrender.com${
-        clean.startsWith('/') ? '' : '/'
-      }${clean}`
+      // старые товары без uploads/
+      if (
+        !clean.startsWith('/uploads')
+      ) {
+        return `https://mz-irbit.onrender.com/uploads/products/${clean}`
+      }
+
+      return `https://mz-irbit.onrender.com${clean}`
     }
 
     return (
