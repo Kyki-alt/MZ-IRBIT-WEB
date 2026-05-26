@@ -5,6 +5,17 @@ export class Order extends Component {
   render() {
 
     const item = this.props.item
+    const getImageUrl = (img) => {
+      if (!img) return ''
+
+      if (img.startsWith('http')) return img
+
+      const clean = img.replace(/^undefined/, '')
+
+      return `https://mz-irbit.onrender.com${
+        clean.startsWith('/') ? '' : '/'
+      }${clean}`
+    }
 
     return (
       <div className='item'>
