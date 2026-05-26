@@ -11,6 +11,22 @@ export class Item extends Component {
       el => el.id === item.id
     )
 
+    const getImageUrl = (img) => {
+      if (!img) {
+        return '/img/placeholder.png'
+      }
+
+      if (img.startsWith('http')) {
+        return img
+      }
+
+      const clean = img.replace(/^undefined/, '')
+
+      return `https://mz-irbit.onrender.com${
+        clean.startsWith('/') ? '' : '/'
+      }${clean}`
+    }
+
     return (
       <div className='item'>
 
