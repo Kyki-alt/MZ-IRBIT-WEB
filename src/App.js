@@ -243,37 +243,39 @@ class App extends React.Component {
 
   decreaseQuantity(id) {
 
-    this.setState({
+     this.setState({
 
-      orders:
-        this.state.orders
+    orders:
+      this.state.orders
 
-          .map(item =>
+        .map(item =>
 
-            item.id === id
+          item.id === id
 
-              ? {
-                  ...item,
-                  quantity:
-                    item.quantity - 1
-                }
+            ? {
+                ...item,
+                quantity:
+                  item.quantity - 1
+              }
 
-              : item
-          )
-
-          .filter(
-            item => item.quantity > 0
-          )
-        }, () => {
-
-        localStorage.setItem(
-
-          'cart',
-
-          JSON.stringify(
-            this.state.orders
-          )
+            : item
         )
+
+        // 🚀 удаляем если 0
+        .filter(
+          item => item.quantity > 0
+        )
+
+    }, () => {
+
+      localStorage.setItem(
+
+        'cart',
+
+        JSON.stringify(
+          this.state.orders
+        )
+      )
 
     })
   }
