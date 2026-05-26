@@ -10,7 +10,7 @@ export default function OrdersManager() {
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch('http://localhost:5000/orders')
+      const res = await fetch('https://mz-irbit.onrender.com/orders')
       const data = await res.json()
 
       setOrders(data)
