@@ -14,9 +14,11 @@ export class ShowFullItem extends Component {
             ✕
           </button>
           
-                <img src={this.props.item.img?.startsWith('http')
-                  ? this.props.item.img
-                  : `https://mz-irbit.onrender.com${this.props.item.img.startsWith('/') ? '' : '/'}${this.props.item.img}`} onClick={() => this.props.onShowItem(this.props.item)} />
+                <img
+                  src={getImageUrl(this.props.item.img)}
+                  onClick={() => this.props.onShowItem(this.props.item)}
+                  alt=""
+                />
                 <h2>{this.props.item.title}</h2>
                 <p>{this.props.item.description}</p>
                 <b>{this.props.item.price}₽</b>

@@ -6,9 +6,13 @@ export class Order extends Component {
 
     const item = this.props.item
     const getImageUrl = (img) => {
-      if (!img) return ''
+      if (!img) {
+        return '/img/placeholder.png'
+      }
 
-      if (img.startsWith('http')) return img
+      if (img.startsWith('http')) {
+        return img
+      }
 
       const clean = img.replace(/^undefined/, '')
 
