@@ -46,10 +46,15 @@ export class Item extends Component {
           <h2>{item.title}</h2>
 
           <b>{item.price}₽</b>
+
+          {item.stock <= 0 && (
+            <div className="out-of-stock">
+              Нет в наличии
+            </div>
+          )}
         </div>
 
-        {/* ЕСЛИ товара ещё нет */}
-        {!orderItem ? (
+        {!orderItem && item.stock > 0 ? (
 
           <div
             className='add-to-cart'

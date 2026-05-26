@@ -198,6 +198,19 @@ class App extends React.Component {
 
   increaseQuantity(id) {
 
+    const currentItem =
+      this.state.orders.find(
+        item => item.id === id
+      )
+
+    if (!currentItem) return
+
+    // 🚫 лимит склада
+    if (currentItem.quantity >= currentItem.stock) {
+      alert('Больше товара нет в наличии')
+      return
+    }
+
     this.setState({
 
       orders:
@@ -213,16 +226,17 @@ class App extends React.Component {
 
             : item
         )
-        }, () => {
 
-          localStorage.setItem(
+    }, () => {
 
-            'cart',
+      localStorage.setItem(
 
-            JSON.stringify(
-              this.state.orders
-            )
-          )
+        'cart',
+
+        JSON.stringify(
+          this.state.orders
+        )
+      )
 
     })
   }
@@ -264,60 +278,73 @@ class App extends React.Component {
     })
   }
 
- addToOrder(item) {
+  addToOrder(item) {
 
-  const exists =
-    this.state.orders.find(
-      el => el.id === item.id
-    )
+    const exists =
+      this.state.orders.find(
+        el => el.id === item.id
+      )
 
-  if (exists) {
+    // если товар уже есть
+    if (exists) {
 
-    this.setState({
+      // 🚫 нельзя больше остатка
+      if (exists.quantity >= item.stock) {
+        alert('Недостаточно товара на складе')
+        return
+      }
 
-      orders:
-        this.state.orders.map(el =>
+      this.setState({
 
-          el.id === item.id
+        orders:
+          this.state.orders.map(el =>
 
-            ? {
-                ...el,
-                quantity:
-                  el.quantity + 1
-              }
+            el.id === item.id
 
-            : el
+              ? {
+                  ...el,
+                  quantity:
+                    el.quantity + 1
+                }
+
+              : el
+          )
+
+      }, () => {
+
+        localStorage.setItem(
+          'cart',
+          JSON.stringify(this.state.orders)
         )
 
-    }, () => {
+      })
 
-      localStorage.setItem(
-        'cart',
-        JSON.stringify(this.state.orders)
-      )
+    } else {
 
-    })
+      // 🚫 если товара нет в наличии
+      if (item.stock <= 0) {
+        alert('Товар закончился')
+        return
+      }
 
-  } else {
+      this.setState({
 
-    this.setState({
+        orders: [
 
-      orders: [
+          ...this.state.orders,
 
-        ...this.state.orders,
+          {
+            ...item,
+            quantity: 1
+          }
+        ]
 
-        {
-          ...item,
-          quantity: 1
-        }
-      ]
+      }, () => {
 
-    }, () => {
-
-      localStorage.setItem(
-        'cart',
-        JSON.stringify(this.state.orders)
-      )
+        localStorage.setItem(
+          'cart',
+          JSON.stringify(this.state.orders)
+        )
 
       })
     }
