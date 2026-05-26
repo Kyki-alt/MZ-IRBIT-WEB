@@ -2,6 +2,21 @@ import React, { Component } from 'react'
 
 export class ShowFullItem extends Component {
   render() {
+    const getImageUrl = (img) => {
+      if (!img) {
+        return '/img/placeholder.png'
+      }
+
+      if (img.startsWith('http')) {
+        return img
+      }
+
+      const clean = img.replace(/^undefined/, '')
+
+      return `https://mz-irbit.onrender.com${
+        clean.startsWith('/') ? '' : '/'
+      }${clean}`
+    }
     return (
       <div className='full-item' 
         onClick={() => this.props.onShowItem(this.props.item)}>
