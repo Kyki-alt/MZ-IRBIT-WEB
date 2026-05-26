@@ -10,10 +10,8 @@ export class Order extends Component {
       <div className='item'>
 
         <img
-          src={
-            `https://mz-irbit.onrender.com${item.img}`
-          }
-          alt=""
+              src={getImageUrl(item.img)}
+              alt=""
         />
         <div className='cart-item-info'>
           <h2>{item.title}</h2>
