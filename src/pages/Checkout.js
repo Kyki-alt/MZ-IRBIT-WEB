@@ -365,6 +365,44 @@ export default function Checkout() {
 
       setPaymentError('')
 
+      // 🔥 проверка корзины перед оформлением
+try {
+  const validateResponse = await fetch(
+    'https://mz-irbit.onrender.com/cart/validate',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        items: cartItems
+      })
+    }
+  )
+
+  const validateData = await validateResponse.json()
+
+    if (!validateResponse.ok) {
+      setLoading(false)
+
+      // можно показать первую ошибку
+      setAddressError(
+        validateData.errors?.[0]?.message ||
+        'Товара нет в наличии'
+      )
+
+      return
+    }
+
+  } catch (error) {
+    console.log(error)
+
+    setLoading(false)
+    setAddressError('Ошибка проверки корзины')
+
+    return
+  }
+
       const orderResponse = await fetch(
 
         'https://mz-irbit.onrender.com/orders',
