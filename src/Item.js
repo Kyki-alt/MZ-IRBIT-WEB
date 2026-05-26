@@ -78,7 +78,7 @@ export class Item extends Component {
             </button>
 
             <span className='card-quantity-value'>
-              {orderItem.quantity}
+              {orderItem?.quantity || 0}
             </span>
 
             <button
