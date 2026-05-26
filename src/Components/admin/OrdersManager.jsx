@@ -1,10 +1,6 @@
-import React, { useEffect, useState } from 'react'
-import axios from 'axios'
+import { useEffect, useState } from 'react'
 
 export default function OrdersManager() {
-
-  const API_URL = 'https://mz-irbit.onrender.com'
-
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -14,83 +10,48 @@ export default function OrdersManager() {
 
   const fetchOrders = async () => {
     try {
-      const res = await axios.get(`${API_URL}/orders`)
-      setOrders(res.data)
+      const res = await fetch('http://localhost:5000/orders')
+      const data = await res.json()
+
+      setOrders(data)
     } catch (err) {
-      console.log(err)
+      console.log('Ошибка загрузки заказов', err)
     } finally {
       setLoading(false)
     }
   }
 
-  const changeStatus = async (id, status) => {
-    try {
-      await axios.put(`${API_URL}/orders/${id}`, { status })
-      fetchOrders()
-    } catch (err) {
-      console.log(err)
-    }
-  }
-
-  // 🗄 архив вместо удаления
-  const archiveOrder = async (id) => {
-    try {
-      await axios.put(`${API_URL}/orders/archive/${id}`)
-      fetchOrders()
-    } catch (err) {
-      console.log(err)
-    }
-  }
-
-  if (loading) return <h2>Загрузка...</h2>
+  if (loading) return <p>Загрузка заказов...</p>
 
   return (
-    <div style={{ padding: 20 }}>
+    <div>
+      <h2>🧾 Заказы</h2>
 
-      <h1>Заказы</h1>
+      <table border="1" cellPadding="8">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Клиент</th>
+            <th>Телефон</th>
+            <th>Сумма</th>
+            <th>Статус оплаты</th>
+            <th>Дата</th>
+          </tr>
+        </thead>
 
-      {orders.map(order => (
-
-        <div
-          key={order.id}
-          style={{
-            border: '1px solid #ccc',
-            marginBottom: 10,
-            padding: 10
-          }}
-        >
-
-          <h3>Заказ #{order.id}</h3>
-
-          <p>Имя: {order.customer_name}</p>
-          <p>Телефон: {order.phone}</p>
-          <p>Адрес: {order.address}</p>
-          <p>Сумма: {order.total_price} ₽</p>
-          <p>Статус: {order.status}</p>
-
-          <select
-            value={order.status}
-            onChange={(e) =>
-              changeStatus(order.id, e.target.value)
-            }
-          >
-            <option value="new">Новый</option>
-            <option value="processing">В работе</option>
-            <option value="done">Готов</option>
-            <option value="cancelled">Отменён</option>
-          </select>
-
-          <button
-            onClick={() => archiveOrder(order.id)}
-            style={{ marginLeft: 10 }}
-          >
-            В архив
-          </button>
-
-        </div>
-
-      ))}
-
+        <tbody>
+          {orders.map(order => (
+            <tr key={order.id}>
+              <td>{order.id}</td>
+              <td>{order.customer_name}</td>
+              <td>{order.phone}</td>
+              <td>{order.total_price} ₽</td>
+              <td>{order.payment_status}</td>
+              <td>{order.created_at}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   )
 }

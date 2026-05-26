@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import './AdminPanel.css'
 import { useNavigate } from 'react-router-dom'
 import ProductsManager from '../Components/admin/products/ProductsManager'
+import OrdersManager from '../Components/admin/orders/OrdersManager'
 
 export default function AdminPanel() {
 
@@ -25,14 +26,7 @@ export default function AdminPanel() {
         return <ProductsManager />
 
       case 'orders':
-        return (
-          <div>
-            <h2>🧾 Заказы</h2>
-            <p>
-              Здесь будет список заказов
-            </p>
-          </div>
-        )
+        return <OrdersManager />
 
       case 'news':
         return (

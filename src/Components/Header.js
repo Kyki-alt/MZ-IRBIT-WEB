@@ -32,6 +32,15 @@ export default function Header(props) {
     item => !item.disabled && item.quantity > 0
   )
 
+  const sortedOrders = [...props.orders].sort((a, b) => {
+    const aDisabled = a.disabled || a.quantity === 0
+    const bDisabled = b.disabled || b.quantity === 0
+
+    if (aDisabled === bDisabled) return 0
+    if (aDisabled) return 1
+    return -1
+  })
+
   return (
   <header>
 
@@ -88,9 +97,10 @@ export default function Header(props) {
         <div className='shop-cart'>
 
           {props.orders.length > 0 ? (
+            
             <div>
 
-              {props.orders.map(el => (
+              {sortedOrders.map(el => (
                 <Order
                   key={el.id}
                   item={el}

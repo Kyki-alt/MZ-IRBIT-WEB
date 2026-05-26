@@ -47,24 +47,24 @@ class App extends React.Component {
   const savedOrders =
     JSON.parse(localStorage.getItem('cart')) || []
 
-    try {
+  try {
 
     // товары
     const productsResponse =
-        await axios.get(
-          'https://mz-irbit.onrender.com/api/products'
-        )
+      await axios.get(
+        'https://mz-irbit.onrender.com/api/products'
+      )
 
-      // категории
-      const categoriesResponse =
-        await axios.get(
-          'https://mz-irbit.onrender.com/categories'
-        )
+    // категории
+    const categoriesResponse =
+      await axios.get(
+        'https://mz-irbit.onrender.com/categories'
+      )
 
-      const products = productsResponse.data
-      const categories = categoriesResponse.data
+    const products = productsResponse.data
+    const categories = categoriesResponse.data
 
-      // 🔥 СИНХРОНИЗАЦИЯ КОРЗИНЫ СО СКЛАДОМ
+    // 🔥 СИНХРОНИЗАЦИЯ КОРЗИНЫ СО СКЛАДОМ
       const syncedOrders = savedOrders.map(item => {
         const liveProduct = products.find(p => p.id === item.id)
 
