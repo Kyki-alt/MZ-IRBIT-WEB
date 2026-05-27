@@ -303,40 +303,85 @@ export default function OrdersManager() {
 
     </div>
 
-    {/* MODAL (оставляем как есть) */}
-    {showDateFilter && (
-      <div className="modal-overlay" onClick={() => setShowDateFilter(false)}>
-        <div className="modal" onClick={(e) => e.stopPropagation()}>
+    {/* MODAL */}
+{showDateFilter && (
+  <div className="modal-overlay" onClick={() => setShowDateFilter(false)}>
+    <div className="date-modal" onClick={(e) => e.stopPropagation()}>
 
-          <h3>📅 Фильтр</h3>
+      <div className="date-modal-header">
+        <h3>📅 Фильтр по дате</h3>
+        <button
+          className="close-btn"
+          onClick={() => setShowDateFilter(false)}
+        >
+          ✕
+        </button>
+      </div>
 
-          <div className="quick-filters">
-            <button onClick={() => applyQuickFilter('today')}>Сегодня</button>
-            <button onClick={() => applyQuickFilter('yesterday')}>Вчера</button>
-            <button onClick={() => applyQuickFilter('7days')}>7 дней</button>
-            <button onClick={() => applyQuickFilter('30days')}>30 дней</button>
-            <button onClick={() => applyQuickFilter('month')}>Месяц</button>
-          </div>
+      {/* QUICK SELECT */}
+      <div className="quick-grid">
+        <button onClick={() => applyQuickFilter('today')}>Сегодня</button>
+        <button onClick={() => applyQuickFilter('yesterday')}>Вчера</button>
+        <button onClick={() => applyQuickFilter('7days')}>7 дней</button>
+        <button onClick={() => applyQuickFilter('30days')}>30 дней</button>
+        <button onClick={() => applyQuickFilter('month')}>Этот месяц</button>
+      </div>
 
+      {/* RANGE INPUTS */}
+      <div className="date-range">
+        <div className="field">
           <label>От</label>
-          <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
+          <input
+            type="date"
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
+          />
+        </div>
 
+        <div className="field">
           <label>До</label>
-          <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
-
-          <div className="modal-actions">
-            <button onClick={() => { setDateFrom(''); setDateTo('') }}>
-              Сброс
-            </button>
-
-            <button onClick={() => setShowDateFilter(false)}>
-              Закрыть
-            </button>
-          </div>
-
+          <input
+            type="date"
+            value={dateTo}
+            onChange={(e) => setDateTo(e.target.value)}
+          />
         </div>
       </div>
-    )}
+
+      {/* PREVIEW */}
+      <div className="date-preview">
+        {dateFrom && dateTo ? (
+          <span>
+            Период: <b>{dateFrom}</b> → <b>{dateTo}</b>
+          </span>
+        ) : (
+          <span className="muted">Выберите диапазон дат</span>
+        )}
+      </div>
+
+      {/* ACTIONS */}
+      <div className="date-actions">
+        <button
+          className="secondary"
+          onClick={() => {
+            setDateFrom('')
+            setDateTo('')
+          }}
+        >
+          Сбросить
+        </button>
+
+        <button
+          className="primary"
+          onClick={() => setShowDateFilter(false)}
+        >
+          Применить
+        </button>
+      </div>
+
+    </div>
+  </div>
+)}
 
   </div>
 )
