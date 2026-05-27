@@ -11,12 +11,10 @@ export class Categories extends Component {
         {this.props.categories.map(el => (
 
           <div
-            key={el.key_name}
+            key={el.id}
 
             onClick={() =>
-              this.props.chooseCategory(
-                el.key_name
-              )
+              this.props.chooseCategory(el.name)
             }
           >
             {el.name}

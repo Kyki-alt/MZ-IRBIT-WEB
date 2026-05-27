@@ -5,10 +5,7 @@ import API_URL from '../../config'
 export default function CategoriesManager() {
 
   const [categories, setCategories] = useState([])
-
   const [name, setName] = useState('')
-  const [keyName, setKeyName] = useState('')
-
   const [editingId, setEditingId] = useState(null)
 
   useEffect(() => {
@@ -27,8 +24,7 @@ export default function CategoriesManager() {
     e.preventDefault()
 
     const payload = {
-      name,
-      key_name: keyName
+      name
     }
 
     if (editingId) {
@@ -52,7 +48,6 @@ export default function CategoriesManager() {
 
   const edit = (item) => {
     setName(item.name)
-    setKeyName(item.key_name)
     setEditingId(item.id)
   }
 
@@ -66,7 +61,6 @@ export default function CategoriesManager() {
 
   const reset = () => {
     setName('')
-    setKeyName('')
     setEditingId(null)
   }
 
@@ -75,18 +69,15 @@ export default function CategoriesManager() {
 
       <h2>🗂 Категории</h2>
 
-      <form onSubmit={submit} className="product-form">
+      <form
+        onSubmit={submit}
+        className="product-form"
+      >
 
         <input
-          placeholder="Название"
+          placeholder="Название категории"
           value={name}
           onChange={(e) => setName(e.target.value)}
-        />
-
-        <input
-          placeholder="key_name"
-          value={keyName}
-          onChange={(e) => setKeyName(e.target.value)}
         />
 
         <button type="submit">
@@ -105,8 +96,6 @@ export default function CategoriesManager() {
           >
 
             <h3>{item.name}</h3>
-
-            <p>{item.key_name}</p>
 
             <div className="product-actions">
 
