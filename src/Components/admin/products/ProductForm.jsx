@@ -136,7 +136,7 @@ const uploadImage = async (file) => {
 
         {categories.map(c => (
           <option key={c.id} value={c.id}>
-            {c.key_name}
+            {c.name}
           </option>
         ))}
       </select>
