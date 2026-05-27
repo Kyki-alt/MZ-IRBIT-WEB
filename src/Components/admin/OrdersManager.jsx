@@ -101,7 +101,7 @@ export default function OrdersManager() {
     })
 
     return filtered
-  }, [orders, search, sortField, sortDirection, dateFrom, dateTo])
+  }, [orders, search, sortField, sortDirection, dateFrom, dateTo, statusFilter])
 
   // ================= STATUS =================
 
@@ -203,6 +203,8 @@ export default function OrdersManager() {
       <button onClick={() => setShowDateFilter(true)}>
         📅 Выбор даты
       </button>
+      
+      <br></br>
 
       <div className="status-filters">
 
