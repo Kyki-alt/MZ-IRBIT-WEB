@@ -244,9 +244,9 @@ export default function OrdersManager() {
                         updateStatus(order.id, e.target.value)
                       }
                     >
-                      <option value="pending">pending</option>
-                      <option value="paid">paid</option>
-                      <option value="failed">failed</option>
+                      <option value="pending">в ожидании оплаты</option>
+                      <option value="paid">оплачен</option>
+                      <option value="failed">отменен</option>
                     </select>
                   </td>
 

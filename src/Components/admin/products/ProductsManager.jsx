@@ -1,333 +1,183 @@
-import React, { useEffect, useMemo, useState } from 'react'
-import './OrdersManager.css'
+import React, { useEffect, useState } from 'react'
+import ProductForm from './ProductForm'
+import API_URL from '../../../config'
 
-export default function OrdersManager() {
+export default function ProductsManager() {
 
-  const [orders, setOrders] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [expanded, setExpanded] = useState(null)
+  const getImageUrl = (img) => {
+    if (!img) return ''
 
-  const [search, setSearch] = useState('')
-  const [sortField, setSortField] = useState('id')
-  const [sortDirection, setSortDirection] = useState('desc')
+    if (img.startsWith('http')) return img
 
-  const [dateFrom, setDateFrom] = useState('')
-  const [dateTo, setDateTo] = useState('')
-  const [showDateFilter, setShowDateFilter] = useState(false)
+    return `${API_URL}${img.startsWith('/') ? '' : '/'}${img}`
+  }
+
+  const [products, setProducts] = useState([])
+  const [showForm, setShowForm] = useState(false)
+  const [editingProduct, setEditingProduct] = useState(null)
+  const [showDeleted, setShowDeleted] = useState(false)
+  const [toast, setToast] = useState(null)
 
   useEffect(() => {
-    fetchOrders()
-  }, [])
+    fetchProducts()
+  }, [showDeleted])
 
-  const fetchOrders = async () => {
-    try {
-      const res = await fetch('https://mz-irbit.onrender.com/orders')
-      const data = await res.json()
 
-      setOrders(Array.isArray(data) ? data : [])
-    } catch (e) {
-      console.log(e)
-    } finally {
-      setLoading(false)
+  const fetchProducts = async (query = '', deleted = showDeleted) => {
+    let url = `${API_URL}/api/products`
+
+    if (query) {
+      url = `${API_URL}/api/products/search?q=${query}&deleted=${deleted}`
+    } else {
+      url = `${API_URL}/api/products?deleted=${deleted}`
     }
+
+    const res = await fetch(url)
+    const data = await res.json()
+    setProducts(data)
   }
 
-  // ================= FILTER =================
-
-  const filteredOrders = useMemo(() => {
-
-    let filtered = [...orders]
-    const q = search.toLowerCase()
-
-    // SEARCH
-    if (q.trim()) {
-      filtered = filtered.filter(order => {
-
-        const dateText = order.created_at
-          ? new Date(order.created_at).toLocaleString().toLowerCase()
-          : ''
-
-        const delivery =
-          order.delivery_type === 'pickup'
-            ? 'самовывоз'
-            : 'доставка'
-
-        return (
-          String(order.id).includes(q) ||
-          order.customer_name?.toLowerCase().includes(q) ||
-          order.phone?.toLowerCase().includes(q) ||
-          dateText.includes(q) ||
-          delivery.includes(q)
-        )
-      })
-    }
-
-    // DATE FILTER
-    if (dateFrom) {
-      const from = new Date(dateFrom)
-      filtered = filtered.filter(o =>
-        new Date(o.created_at) >= from
-      )
-    }
-
-    if (dateTo) {
-      const to = new Date(dateTo)
-      to.setHours(23, 59, 59, 999)
-
-      filtered = filtered.filter(o =>
-        new Date(o.created_at) <= to
-      )
-    }
-
-    // SORT
-    filtered.sort((a, b) => {
-
-      const aValue = a[sortField] ?? ''
-      const bValue = b[sortField] ?? ''
-
-      if (sortDirection === 'asc') {
-        return aValue > bValue ? 1 : -1
-      }
-
-      return aValue < bValue ? 1 : -1
+  // CREATE
+  const addProduct = async (product) => {
+    const res = await fetch(`${API_URL}/api/products`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(product)
     })
 
-    return filtered
-  }, [orders, search, sortField, sortDirection, dateFrom, dateTo])
+    const data = await res.json()
 
-  // ================= STATUS =================
-
-  const updateStatus = async (id, status) => {
-    try {
-      await fetch(`https://mz-irbit.onrender.com/orders/${id}/status`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status })
-      })
-
-      setOrders(prev =>
-        prev.map(o =>
-          o.id === id
-            ? { ...o, payment_status: status }
-            : o
-        )
-      )
-    } catch (e) {
-      console.log(e)
-    }
+    setProducts(prev => [data, ...prev])
+    setShowForm(false)
+    showToast('Товар добавлен')
   }
 
-  // ================= UI =================
+  // UPDATE 
+  const updateProduct = async (id, product) => {
+    const res = await fetch(`${API_URL}/api/products/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(product)
+    })
 
-  const toggleExpand = (id) => {
-    setExpanded(expanded === id ? null : id)
+    const data = await res.json()
+
+    setProducts(prev =>
+      prev.map(p => p.id === id ? data : p)
+    )
+
+    setEditingProduct(null)
+    setShowForm(false)
+    showToast('Товар обновлён')
   }
 
-  const handleSort = (field) => {
-    if (sortField === field) {
-      setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc')
-    } else {
-      setSortField(field)
-      setSortDirection('asc')
-    }
+  const deleteProduct = async (id) => {
+    await fetch(`${API_URL}/api/products/${id}`, {
+      method: 'DELETE'
+    })
+
+    setProducts(prev => prev.filter(p => p.id !== id))
+    showToast('Товар удалён', 'error')
   }
 
-  const applyQuickFilter = (type) => {
-
-    const now = new Date()
-    let from = null
-    let to = new Date()
-
-    switch (type) {
-
-      case 'today':
-        from = new Date()
-        from.setHours(0, 0, 0, 0)
-        break
-
-      case 'yesterday':
-        from = new Date()
-        from.setDate(now.getDate() - 1)
-        from.setHours(0, 0, 0, 0)
-
-        to = new Date()
-        to.setDate(now.getDate() - 1)
-        to.setHours(23, 59, 59, 999)
-        break
-
-      case '7days':
-        from = new Date()
-        from.setDate(now.getDate() - 7)
-        break
-
-      case '30days':
-        from = new Date()
-        from.setDate(now.getDate() - 30)
-        break
-
-      case 'month':
-        from = new Date(now.getFullYear(), now.getMonth(), 1)
-        break
-    }
-
-    setDateFrom(from ? from.toISOString().slice(0, 10) : '')
-    setDateTo(to ? to.toISOString().slice(0, 10) : '')
+  const startEdit = (product) => {
+    setEditingProduct(product)
+    setShowForm(true)
   }
 
-  if (loading) return <div className="orders-loading">Загрузка...</div>
+  const restoreProduct = async (id) => {
+    await fetch(`${API_URL}/api/products/${id}/restore`, {
+      method: 'PATCH'
+    })
+    showToast('Товар восстановлен')
+    fetchProducts('', showDeleted)
+  }
 
-  // ================= RENDER =================
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type })
+
+    setTimeout(() => {
+      setToast(null)
+    }, 2500)
+  }
 
   return (
-    <div className="orders-page">
+    <div>
 
-      <div className="orders-topbar">
+      <div className="products-header">
+        <h2>📦 Товары</h2>
 
-        <div className="left">
-          <h2>🧾 Заказы</h2>
-        </div>
+        <input
+          placeholder="Поиск товаров..."
+          onChange={(e) => fetchProducts(e.target.value, showDeleted)}
+        />
 
-        <div className="center">
-          <input
-            placeholder="Поиск..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-
-        <div className="right">
-
-          <button onClick={() => setShowDateFilter(true)}>
-            📅 Фильтр
-          </button>
-
-        </div>
-
+        <button onClick={() => {
+          setShowForm(!showForm)
+          setEditingProduct(null)
+        }}>
+          {showForm ? 'Закрыть' : 'Добавить'}
+        </button>
       </div>
 
-      <div className="orders-table-wrapper">
-
-        <table className="orders-table">
-
-          <thead>
-            <tr>
-              <th onClick={() => handleSort('id')}>ID</th>
-              <th onClick={() => handleSort('customer_name')}>Клиент</th>
-              <th>Телефон</th>
-              <th onClick={() => handleSort('total_price')}>Сумма</th>
-              <th>Статус</th>
-              <th onClick={() => handleSort('created_at')}>Дата</th>
-            </tr>
-          </thead>
-
-          <tbody>
-
-            {filteredOrders.map(order => (
-              <React.Fragment key={order.id}>
-
-                <tr
-                  className="clickable"
-                  onClick={() => toggleExpand(order.id)}
-                >
-                  <td>#{order.id}</td>
-                  <td>{order.customer_name}</td>
-                  <td>{order.phone}</td>
-
-                  <td>
-                    {Number(order.total_price).toLocaleString()} ₽
-                  </td>
-
-                  <td>
-                    <select
-                      value={order.payment_status}
-                      onChange={(e) =>
-                        updateStatus(order.id, e.target.value)
-                      }
-                    >
-                      <option value="pending">в ожидании оплаты</option>
-                      <option value="paid">оплачен</option>
-                      <option value="failed">отменен</option>
-                    </select>
-                  </td>
-
-                  <td>
-                    {new Date(order.created_at).toLocaleString()}
-                  </td>
-                </tr>
-
-                {expanded === order.id && (
-                  <tr>
-                    <td colSpan="6">
-
-                      <div className="expanded-content">
-
-                        <h4>📦 Товары</h4>
-
-                        {order.items?.map(item => (
-                          <div key={item.product_id}>
-                            {item.title} — {item.quantity} × {item.price} ₽
-                          </div>
-                        ))}
-
-                        <p>
-                          {order.delivery_type === 'pickup'
-                            ? '📦 Самовывоз'
-                            : '🚚 Курьерская доставка'}
-                        </p>
-
-                      </div>
-
-                    </td>
-                  </tr>
-                )}
-
-              </React.Fragment>
-            ))}
-
-          </tbody>
-
-        </table>
-      </div>
-
-      {/* MODAL */}
-      {showDateFilter && (
-        <div className="modal-overlay" onClick={() => setShowDateFilter(false)}>
-
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-
-            <h3>📅 Фильтр</h3>
-
-            <div className="quick-filters">
-              <button onClick={() => applyQuickFilter('today')}>Сегодня</button>
-              <button onClick={() => applyQuickFilter('yesterday')}>Вчера</button>
-              <button onClick={() => applyQuickFilter('7days')}>7 дней</button>
-              <button onClick={() => applyQuickFilter('30days')}>30 дней</button>
-              <button onClick={() => applyQuickFilter('month')}>Месяц</button>
-            </div>
-
-            <label>От</label>
-            <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
-
-            <label>До</label>
-            <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
-
-            <div className="modal-actions">
-
-              <button onClick={() => { setDateFrom(''); setDateTo('') }}>
-                Сброс
-              </button>
-
-              <button onClick={() => setShowDateFilter(false)}>
-                Закрыть
-              </button>
-
-            </div>
-
-          </div>
-
-        </div>
+      {showForm && (
+        <ProductForm
+          addProduct={addProduct}
+          updateProduct={updateProduct}
+          editingProduct={editingProduct}
+          setEditingProduct={setEditingProduct}
+        />
       )}
 
+      <div className="products-grid">
+        {products.map(p => {
+
+          console.log('IMG RAW:', p.img)
+          console.log('IMG FINAL:', getImageUrl(p.img)) 
+
+          return (
+            <div className="product-card" key={p.id}>
+
+            <div className="product-image">
+              {p.img ? (
+                <img src={getImageUrl(p.img)} />
+              ) : (
+                <div className="no-image">No image</div>
+              )}
+            </div>
+
+              <div className="product-info">
+                <h3>{p.title}</h3>
+
+                <p className="price">{p.price} ₽</p>
+
+                <p className="stock">
+                  Остаток: {p.stock}
+                </p>
+
+                <p className={p.is_active ? 'status-active' : 'status-hidden'}>
+                  {p.is_active ? 'Активен' : 'Скрыт'}
+                </p>
+              </div>
+
+              <div className="product-actions">
+                <button onClick={() => startEdit(p)}>Редактировать</button>
+
+                <button onClick={() => deleteProduct(p.id)}>
+                  Удалить
+                </button>
+
+                {showDeleted && (
+                  <button onClick={() => restoreProduct(p.id)}>
+                    Восстановить
+                  </button>
+                )}
+              </div>
+
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }
