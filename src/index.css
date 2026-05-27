@@ -1253,19 +1253,3 @@ footer {
     border-radius: 28px;
   }
 }
-
-header .shop-cart {
-  z-index: 999999 !important;
-  pointer-events: auto !important;
-}
-
-header .shop-cart * {
-  pointer-events: auto !important;
-}
-
-.quantity-btn,
-.delete-icon {
-  position: relative;
-  z-index: 999999 !important;
-  pointer-events: auto !important;
-}
