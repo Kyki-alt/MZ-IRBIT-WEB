@@ -352,6 +352,7 @@ header .shop-cart-button svg {
 
 header .shop-cart  {
     position: fixed;
+    
 
     top: 95px;
     right: 60px;
@@ -1251,4 +1252,18 @@ footer {
     height: 300px;
     border-radius: 28px;
   }
+}
+
+header .shop-cart {
+    pointer-events: auto;
+}
+
+header .shop-cart * {
+    pointer-events: auto;
+}
+
+.quantity-btn,
+.delete-icon {
+    position: relative;
+    z-index: 9999;
 }

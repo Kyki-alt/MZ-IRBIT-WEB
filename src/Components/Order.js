@@ -25,57 +25,59 @@ export class Order extends Component {
       return `https://mz-irbit.onrender.com${clean}`
     }
 
-    return (
-      <div className='cart-item'>
+return (
+  <div className='cart-item'>
 
-        <img
-          src={getImageUrl(item.img)}
-          alt=""
-        />
+    <img
+      src={getImageUrl(item.img)}
+      alt=""
+    />
 
-        <div className='cart-item-info'>
-          <h2>{item.title}</h2>
+    <div className='cart-item-info'>
+      <h2>{item.title}</h2>
 
-          <p>{item.price}₽ × {item.quantity}</p>
+      <p>{item.price}₽ × {item.quantity}</p>
 
-          <div className='quantity-controls'>
+      <div className='quantity-controls'>
 
-            <button
-              className='quantity-btn'
-              onClick={() =>
-                this.props.decreaseQuantity(item.id)
-              }
-            >
-              −
-            </button>
+        <button
+          type="button"
+          className='quantity-btn'
+          onClick={() =>
+            this.props.decreaseQuantity(item.id)
+          }
+        >
+          −
+        </button>
 
-            <span className='quantity-value'>
-              {item.quantity}
-            </span>
+        <span className='quantity-value'>
+          {item.quantity}
+        </span>
 
-            <button
-              className='quantity-btn'
-              onClick={() =>
-                this.props.increaseQuantity(item.id)
-              }
-            >
-              +
-            </button>
-
-          </div>
-        </div>
-
-        <div className='cart-item-right'>
-          <FaTrash
-            className='delete-icon'
-            onClick={() =>
-              this.props.onDelete(item.id)
-            }
-          />
-        </div>
+        <button
+          type="button"
+          className='quantity-btn'
+          onClick={() =>
+            this.props.increaseQuantity(item.id)
+          }
+        >
+          +
+        </button>
 
       </div>
-    )
+    </div>
+
+    <div className='cart-item-right'>
+      <div
+        className='delete-icon'
+        onClick={() => this.props.onDelete(item.id)}
+      >
+        <FaTrash />
+      </div>
+    </div>
+
+  </div>
+)
   }
 }
 
