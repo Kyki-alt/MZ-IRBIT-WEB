@@ -54,39 +54,38 @@ export default function OrdersManager() {
   // =========================
 
   const filteredOrders = useMemo(() => {
-
     let filtered = [...orders]
 
     if (search.trim()) {
+      const q = search.toLowerCase()
 
       filtered = filtered.filter(order => {
+        const date = order.created_at
+          ? new Date(order.created_at)
+              .toLocaleString()
+              .toLowerCase()
+          : ''
 
-        const q = search.toLowerCase()
+        const delivery =
+          order.delivery_type === 'pickup'
+            ? 'самовывоз'
+            : 'доставка'
 
         return (
           String(order.id).includes(q) ||
-          order.customer_name
-            ?.toLowerCase()
-            .includes(q) ||
-
-          order.phone
-            ?.toLowerCase()
-            .includes(q)
+          order.customer_name?.toLowerCase().includes(q) ||
+          order.phone?.toLowerCase().includes(q) ||
+          date.includes(q) ||
+          delivery.includes(q)
         )
       })
     }
 
-    // =========================
-    // SORT
-    // =========================
-
     filtered.sort((a, b) => {
-
       const aValue = a[sortField]
       const bValue = b[sortField]
 
       if (sortDirection === 'asc') {
-
         return aValue > bValue ? 1 : -1
       }
 
@@ -94,13 +93,7 @@ export default function OrdersManager() {
     })
 
     return filtered
-
-  }, [
-    orders,
-    search,
-    sortField,
-    sortDirection
-  ])
+  }, [orders, search, sortField, sortDirection])
 
   // =========================
   // STATUS UPDATE
