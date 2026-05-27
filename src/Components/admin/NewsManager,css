@@ -1,30 +1,162 @@
+/* =========================
+   NEWS ADMIN (как товары)
+========================= */
+
 .news-admin {
-  padding: 20px;
+  width: 100%;
 }
 
+/* HEADER (как products-header) */
+.news-header-admin {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.news-header-admin input {
+  flex: 1;
+  min-width: 220px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+
+/* BUTTON */
+.news-header-admin button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.news-header-admin button:hover {
+  opacity: 0.85;
+}
+
+/* =========================
+   FORM (как product-form)
+========================= */
+
 .news-form {
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+  margin-bottom: 20px;
+
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  max-width: 500px;
-  margin-bottom: 30px;
+  gap: 12px;
 }
+
+.news-form input,
+.news-form textarea {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  outline: none;
+}
+
+.news-form button {
+  background: #111827;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* IMAGE PREVIEW */
+.news-form img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid #eee;
+}
+
+/* =========================
+   GRID (как products-grid)
+========================= */
 
 .news-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  align-items: stretch;
 }
 
+/* CARD (как product-card) */
 .news-card-admin {
   background: white;
-  padding: 15px;
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: 0.2s;
+}
+
+.news-card-admin:hover {
+  transform: translateY(-3px);
+}
+
+/* IMAGE */
+.news-card-admin img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
   border-radius: 12px;
 }
 
-.news-card-admin img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-  border-radius: 10px;
+/* INFO */
+.news-card-admin h3 {
+  font-size: 16px;
+  margin-top: 10px;
+  color: #0f172a;
+}
+
+.news-card-admin p {
+  font-size: 13px;
+  color: #64748b;
+  flex: 1;
+}
+
+/* ACTIONS (как product-actions) */
+.news-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: auto;
+}
+
+.news-actions button {
+  flex: 1;
+  padding: 8px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  transition: 0.2s;
+}
+
+.news-actions button:hover {
+  opacity: 0.85;
+}
+
+.news-actions button:nth-child(1) {
+  background: #2563eb;
+  color: white;
+}
+
+.news-actions button:nth-child(2) {
+  background: #ef4444;
+  color: white;
 }
