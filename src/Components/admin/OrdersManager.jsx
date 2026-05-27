@@ -203,8 +203,6 @@ export default function OrdersManager() {
       <button onClick={() => setShowDateFilter(true)}>
         📅 Выбор даты
       </button>
-      
-      <br></br>
 
       <div className="status-filters">
 
