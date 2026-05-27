@@ -850,7 +850,7 @@ main .item {
 
     overflow: hidden;
 
-    background: rgba(255, 255, 255, 0.35);
+    background: #ffffffeb;
 
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
