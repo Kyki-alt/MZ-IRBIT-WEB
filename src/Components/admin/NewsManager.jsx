@@ -15,6 +15,7 @@ export default function NewsManager() {
   const [editingId, setEditingId] = useState(null)
   const [loading, setLoading] = useState(false)
   const [uploading, setUploading] = useState(false)
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
     fetchNews()
@@ -83,6 +84,15 @@ export default function NewsManager() {
     fetchNews()
   }
 
+  const filteredNews = news.filter(item => {
+    const q = search.toLowerCase()
+
+    return (
+      item.title?.toLowerCase().includes(q) ||
+      item.description?.toLowerCase().includes(q)
+    )
+  })
+
   return (
     <div className="news-admin">
 
@@ -93,6 +103,8 @@ export default function NewsManager() {
 
         <input
           placeholder="Поиск новостей..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
         />
 
         <button
@@ -143,7 +155,7 @@ export default function NewsManager() {
       {/* GRID (как products-grid) */}
       <div className="news-grid">
 
-        {news.map(item => (
+        {filteredNews.map(item => (
           <div key={item.id} className="news-card-admin">
 
             <img src={`${API_URL}${item.image}`} />
