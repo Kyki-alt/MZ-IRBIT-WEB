@@ -1,0 +1,30 @@
+.news-admin {
+  padding: 20px;
+}
+
+.news-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 500px;
+  margin-bottom: 30px;
+}
+
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.news-card-admin {
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+}
+
+.news-card-admin img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+}

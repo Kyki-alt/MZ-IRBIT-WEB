@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import API_URL from '../../config'
 
@@ -7,93 +7,133 @@ export default function NewsManager() {
   const [news, setNews] = useState([])
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-  const [image, setImage] = useState(null)
+  const [image, setImage] = useState('')
+  const [editingId, setEditingId] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [uploading, setUploading] = useState(false)
+
+  useEffect(() => {
+    fetchNews()
+  }, [])
 
   const fetchNews = async () => {
     const res = await axios.get(`${API_URL}/news`)
     setNews(res.data)
   }
 
-  useEffect(() => {
-    fetchNews()
-  }, [])
-
-  const uploadImage = async () => {
+  const uploadImage = async (file) => {
+    setUploading(true)
 
     const formData = new FormData()
-    formData.append('image', image)
+    formData.append('image', file)
 
     const res = await axios.post(
       `${API_URL}/news/upload`,
-      formData
+      formData,
+      { headers: { 'Content-Type': 'multipart/form-data' } }
     )
 
-    return res.data.imageUrl
+    setImage(res.data.imageUrl)
+    setUploading(false)
   }
 
-  const createNews = async () => {
+  const submit = async (e) => {
+    e.preventDefault()
+    setLoading(true)
 
-    let imageUrl = ''
+    const payload = { title, description, image }
 
-    if (image) {
-      imageUrl = await uploadImage()
+    if (editingId) {
+      await axios.put(`${API_URL}/news/${editingId}`, payload)
+    } else {
+      await axios.post(`${API_URL}/news`, payload)
     }
-
-    await axios.post(`${API_URL}/news`, {
-      title,
-      description,
-      image: imageUrl
-    })
 
     setTitle('')
     setDescription('')
-    setImage(null)
+    setImage('')
+    setEditingId(null)
 
+    fetchNews()
+    setLoading(false)
+  }
+
+  const edit = (item) => {
+    setTitle(item.title)
+    setDescription(item.description)
+    setImage(item.image)
+    setEditingId(item.id)
+  }
+
+  const remove = async (id) => {
+    await axios.delete(`${API_URL}/news/${id}`)
     fetchNews()
   }
 
   return (
-    <div style={{ padding: 20 }}>
+    <div className="news-admin">
 
-      <h2>📰 Добавить новость</h2>
+      <h2>📰 Управление новостями</h2>
 
-      <input
-        placeholder="Заголовок"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
+      {/* FORM */}
+      <form onSubmit={submit} className="news-form">
 
-      <br /><br />
+        <input
+          placeholder="Заголовок"
+          value={title}
+          onChange={e => setTitle(e.target.value)}
+        />
 
-      <textarea
-        placeholder="Описание"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
+        <textarea
+          placeholder="Описание"
+          value={description}
+          onChange={e => setDescription(e.target.value)}
+        />
 
-      <br /><br />
+        <input
+          type="file"
+          onChange={e => uploadImage(e.target.files[0])}
+        />
 
-      <input
-        type="file"
-        onChange={(e) => setImage(e.target.files[0])}
-      />
+        {uploading && <p>Загрузка изображения...</p>}
 
-      <br /><br />
+        {image && (
+          <img
+            src={`${API_URL}${image}`}
+            style={{ width: 200, marginTop: 10 }}
+          />
+        )}
 
-      <button onClick={createNews}>
-        ➕ Добавить
-      </button>
+        <button disabled={loading}>
+          {editingId ? 'Обновить' : 'Создать'}
+        </button>
 
-      <hr />
+      </form>
 
-      <h3>Список новостей</h3>
+      {/* LIST */}
+      <div className="news-grid">
 
-      {news.map(n => (
-        <div key={n.id} style={{ marginBottom: 10 }}>
-          <b>{n.title}</b>
-          <p>{n.description}</p>
-        </div>
-      ))}
+        {news.map(item => (
+          <div key={item.id} className="news-card-admin">
+
+            <img src={`${API_URL}${item.image}`} />
+
+            <h3>{item.title}</h3>
+
+            <p>{item.description}</p>
+
+            <button onClick={() => edit(item)}>
+              Редактировать
+            </button>
+
+            <button onClick={() => remove(item.id)}>
+              Удалить
+            </button>
+
+          </div>
+        ))}
+
+      </div>
 
     </div>
   )
