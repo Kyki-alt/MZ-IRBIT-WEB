@@ -125,33 +125,49 @@ export default function NewsManager() {
 
       {/* FORM (как product-form) */}
       {showForm && (
-        <form onSubmit={submit} className="news-form">
+        <form
+          onSubmit={submit}
+          className="news-form"
+          style={{ opacity: uploading ? 0.6 : 1, pointerEvents: uploading ? 'none' : 'auto' }}
+        >
 
           <input
             placeholder="Заголовок"
             value={title}
+            disabled={uploading}
             onChange={e => setTitle(e.target.value)}
           />
 
           <textarea
             placeholder="Описание"
             value={description}
+            disabled={uploading}
             onChange={e => setDescription(e.target.value)}
           />
 
           <input
             type="file"
+            disabled={uploading}
             onChange={e => uploadImage(e.target.files[0])}
           />
 
-          {uploading && <p>Загрузка...</p>}
+          {uploading && (
+            <div className="upload-loader">
+              <div className="spinner"></div>
+              <span>Загрузка изображения...</span>
+            </div>
+          )}
 
           {image && (
             <img src={`${API_URL}${image}`} alt="" />
           )}
 
-          <button type="submit" disabled={loading}>
-            {editingId ? 'Обновить' : 'Создать'}
+          <button
+              type="submit"
+              disabled={loading || uploading}
+              className="news-submit-btn"
+              >
+              {uploading ? 'Загрузка...' : editingId ? 'Обновить' : 'Создать'}
           </button>
 
         </form>
