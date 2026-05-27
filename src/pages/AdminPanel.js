@@ -127,7 +127,7 @@ export default function AdminPanel() {
             setSection('settings')
           }
         >
-          ⚙️ Настройки
+          Создать админа
         </button>
 
         <button
