@@ -1255,15 +1255,17 @@ footer {
 }
 
 header .shop-cart {
-    pointer-events: auto;
+  z-index: 999999 !important;
+  pointer-events: auto !important;
 }
 
 header .shop-cart * {
-    pointer-events: auto;
+  pointer-events: auto !important;
 }
 
 .quantity-btn,
 .delete-icon {
-    position: relative;
-    z-index: 9999;
+  position: relative;
+  z-index: 999999 !important;
+  pointer-events: auto !important;
 }
