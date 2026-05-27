@@ -14,6 +14,7 @@ export default function OrdersManager() {
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
   const [showDateFilter, setShowDateFilter] = useState(false)
+  const [statusFilter, setStatusFilter] = useState('all')
 
   useEffect(() => {
     fetchOrders()
@@ -76,6 +77,13 @@ export default function OrdersManager() {
 
       filtered = filtered.filter(o =>
         new Date(o.created_at) <= to
+      )
+    }
+
+    // STATUS FILTER
+    if (statusFilter !== 'all') {
+      filtered = filtered.filter(order =>
+        order.payment_status === statusFilter
       )
     }
 
@@ -191,6 +199,16 @@ export default function OrdersManager() {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
+
+      <select
+        value={statusFilter}
+        onChange={(e) => setStatusFilter(e.target.value)}
+        >
+        <option value="all">Все статусы</option>
+        <option value="paid">Оплачен</option>
+        <option value="pending">В процессе</option>
+        <option value="failed">Отменен</option>
+      </select>
 
       <button onClick={() => setShowDateFilter(true)}>
         📅 Фильтр
