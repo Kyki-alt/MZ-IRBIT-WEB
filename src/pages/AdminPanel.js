@@ -75,7 +75,7 @@ export default function AdminPanel() {
             setSection('products')
           }
         >
-          📦 Товары
+          Товары
         </button>
 
         <button
@@ -88,7 +88,7 @@ export default function AdminPanel() {
             setSection('orders')
           }
         >
-          🧾 Заказы
+          Заказы
         </button>
 
         <button
@@ -101,7 +101,7 @@ export default function AdminPanel() {
             setSection('news')
           }
         >
-          📰 Новости
+          Новости
         </button>
 
         <button
@@ -114,7 +114,7 @@ export default function AdminPanel() {
             setSection('categories')
           }
         >
-          🗂 Категории
+          Категории
         </button>
 
         <button
