@@ -22,7 +22,7 @@ export default function NewsManager() {
   }, [])
 
   const fetchNews = async () => {
-    const res = await axios.get(`${API_URL}/news`)
+    const res = await axios.get(`${API_URL}/api/news`)
     setNews(res.data)
   }
 
@@ -33,13 +33,13 @@ export default function NewsManager() {
     const formData = new FormData()
     formData.append('image', file)
 
-    const res = await axios.post(
-      `${API_URL}/news/upload?type=news`,
-      formData,
-      {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      }
-    )
+  const res = await axios.post(
+    `${API_URL}/api/news/upload?type=news`,
+    formData,
+    {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    }
+  )
 
     setImage(res.data.imageUrl)
     setUploading(false)
@@ -52,11 +52,11 @@ export default function NewsManager() {
 
     const payload = { title, description, image }
 
-    if (editingId) {
-      await axios.put(`${API_URL}/news/${editingId}`, payload)
-    } else {
-      await axios.post(`${API_URL}/news`, payload)
-    }
+  if (editingId) {
+    await axios.put(`${API_URL}/api/news/${editingId}`, payload)
+  } else {
+    await axios.post(`${API_URL}/api/news`, payload)
+  }
 
     resetForm()
     fetchNews()
@@ -82,7 +82,7 @@ export default function NewsManager() {
 
   // ================= DELETE =================
   const remove = async (id) => {
-    await axios.delete(`${API_URL}/news/${id}`)
+    await axios.delete(`${API_URL}/api/news/${id}`)
     fetchNews()
   }
 
