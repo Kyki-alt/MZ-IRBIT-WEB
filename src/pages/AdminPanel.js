@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import ProductsManager from '../Components/admin/products/ProductsManager'
 import OrdersManager from '../Components/admin/OrdersManager'
 import NewsManager from '../Components/admin/NewsManager'
+import CategoriesManager from '../Components/admin/CategoriesManager'
 
 export default function AdminPanel() {
 
@@ -33,11 +34,7 @@ export default function AdminPanel() {
         return <NewsManager />
 
       case 'categories':
-        return (
-          <div>
-            <h2>🗂 Категории</h2>
-          </div>
-        )
+        return <CategoriesManager />
 
       case 'settings':
         return (
