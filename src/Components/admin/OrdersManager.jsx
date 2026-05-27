@@ -206,6 +206,8 @@ export default function OrdersManager() {
 
     </div>
 
+    <br></br>
+
           <div className="status-filters">
 
         <button
