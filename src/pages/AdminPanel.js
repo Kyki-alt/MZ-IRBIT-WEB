@@ -5,6 +5,7 @@ import ProductsManager from '../Components/admin/products/ProductsManager'
 import OrdersManager from '../Components/admin/OrdersManager'
 import NewsManager from '../Components/admin/NewsManager'
 import CategoriesManager from '../Components/admin/CategoriesManager'
+import AdminSettings from '../Components/admin/AdminSettings'
 
 export default function AdminPanel() {
 
