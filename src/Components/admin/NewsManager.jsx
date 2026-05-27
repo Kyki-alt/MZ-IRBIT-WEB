@@ -34,9 +34,11 @@ export default function NewsManager() {
     formData.append('image', file)
 
     const res = await axios.post(
-      `${API_URL}/news/upload`,
+      `${API_URL}/news/upload?type=news`,
       formData,
-      { headers: { 'Content-Type': 'multipart/form-data' } }
+      {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      }
     )
 
     setImage(res.data.imageUrl)
