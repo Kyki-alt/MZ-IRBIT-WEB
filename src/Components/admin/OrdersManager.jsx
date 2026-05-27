@@ -1,5 +1,4 @@
-import React from 'react'
-import { Fragment, useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import './OrdersManager.css'
 
 export default function OrdersManager() {
@@ -15,8 +14,6 @@ export default function OrdersManager() {
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
   const [showDateFilter, setShowDateFilter] = useState(false)
-
-  const [archiveMode, setArchiveMode] = useState(false)
 
   useEffect(() => {
     fetchOrders()
@@ -40,10 +37,9 @@ export default function OrdersManager() {
   const filteredOrders = useMemo(() => {
 
     let filtered = [...orders]
-
     const q = search.toLowerCase()
 
-    // search
+    // SEARCH
     if (q.trim()) {
       filtered = filtered.filter(order => {
 
@@ -66,14 +62,7 @@ export default function OrdersManager() {
       })
     }
 
-    // archive filter
-    if (archiveMode) {
-      filtered = filtered.filter(o => o.is_archived === true)
-    } else {
-      filtered = filtered.filter(o => !o.is_archived)
-    }
-
-    // date filter
+    // DATE FILTER
     if (dateFrom) {
       const from = new Date(dateFrom)
       filtered = filtered.filter(o =>
@@ -90,7 +79,7 @@ export default function OrdersManager() {
       )
     }
 
-    // sort safe
+    // SORT
     filtered.sort((a, b) => {
 
       const aValue = a[sortField] ?? ''
@@ -104,8 +93,7 @@ export default function OrdersManager() {
     })
 
     return filtered
-
-  }, [orders, search, sortField, sortDirection, dateFrom, dateTo, archiveMode])
+  }, [orders, search, sortField, sortDirection, dateFrom, dateTo])
 
   // ================= STATUS =================
 
@@ -154,17 +142,17 @@ export default function OrdersManager() {
 
       case 'today':
         from = new Date()
-        from.setHours(0,0,0,0)
+        from.setHours(0, 0, 0, 0)
         break
 
       case 'yesterday':
         from = new Date()
         from.setDate(now.getDate() - 1)
-        from.setHours(0,0,0,0)
+        from.setHours(0, 0, 0, 0)
 
         to = new Date()
         to.setDate(now.getDate() - 1)
-        to.setHours(23,59,59,999)
+        to.setHours(23, 59, 59, 999)
         break
 
       case '7days':
@@ -182,8 +170,8 @@ export default function OrdersManager() {
         break
     }
 
-    setDateFrom(from ? from.toISOString().slice(0,10) : '')
-    setDateTo(to ? to.toISOString().slice(0,10) : '')
+    setDateFrom(from ? from.toISOString().slice(0, 10) : '')
+    setDateTo(to ? to.toISOString().slice(0, 10) : '')
   }
 
   if (loading) return <div className="orders-loading">Загрузка...</div>
@@ -193,7 +181,6 @@ export default function OrdersManager() {
   return (
     <div className="orders-page">
 
-      {/* TOP BAR */}
       <div className="orders-topbar">
 
         <div className="left">
@@ -214,15 +201,10 @@ export default function OrdersManager() {
             📅 Фильтр
           </button>
 
-          <button onClick={() => setArchiveMode(p => !p)}>
-            {archiveMode ? '📦 Активные' : '🗑 Архив'}
-          </button>
-
         </div>
 
       </div>
 
-      {/* TABLE */}
       <div className="orders-table-wrapper">
 
         <table className="orders-table">
