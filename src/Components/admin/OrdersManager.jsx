@@ -1,10 +1,23 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import './OrdersManager.css'
 
 export default function OrdersManager() {
 
   const [orders, setOrders] = useState([])
+
   const [loading, setLoading] = useState(true)
+
+  const [expanded, setExpanded] =
+    useState(null)
+
+  const [search, setSearch] =
+    useState('')
+
+  const [sortField, setSortField] =
+    useState('id')
+
+  const [sortDirection, setSortDirection] =
+    useState('desc')
 
   useEffect(() => {
     fetchOrders()
@@ -21,15 +34,14 @@ export default function OrdersManager() {
       const data = await res.json()
 
       setOrders(
-        Array.isArray(data) ? data : []
+        Array.isArray(data)
+          ? data
+          : []
       )
 
-    } catch (err) {
+    } catch (e) {
 
-      console.log(
-        'Ошибка загрузки заказов',
-        err
-      )
+      console.log(e)
 
     } finally {
 
@@ -37,28 +49,135 @@ export default function OrdersManager() {
     }
   }
 
-  const getStatusClass = (status) => {
+  // =========================
+  // SEARCH
+  // =========================
 
-    switch (status) {
+  const filteredOrders = useMemo(() => {
 
-      case 'paid':
-        return 'paid'
+    let filtered = [...orders]
 
-      case 'pending':
-        return 'pending'
+    if (search.trim()) {
 
-      case 'failed':
-        return 'failed'
+      filtered = filtered.filter(order => {
 
-      default:
-        return ''
+        const q = search.toLowerCase()
+
+        return (
+          String(order.id).includes(q) ||
+          order.customer_name
+            ?.toLowerCase()
+            .includes(q) ||
+
+          order.phone
+            ?.toLowerCase()
+            .includes(q)
+        )
+      })
+    }
+
+    // =========================
+    // SORT
+    // =========================
+
+    filtered.sort((a, b) => {
+
+      const aValue = a[sortField]
+      const bValue = b[sortField]
+
+      if (sortDirection === 'asc') {
+
+        return aValue > bValue ? 1 : -1
+      }
+
+      return aValue < bValue ? 1 : -1
+    })
+
+    return filtered
+
+  }, [
+    orders,
+    search,
+    sortField,
+    sortDirection
+  ])
+
+  // =========================
+  // STATUS UPDATE
+  // =========================
+
+  const updateStatus = async (
+    id,
+    status
+  ) => {
+
+    try {
+
+      await fetch(
+        `https://mz-irbit.onrender.com/orders/${id}/status`,
+        {
+          method: 'PATCH',
+
+          headers: {
+            'Content-Type':
+              'application/json'
+          },
+
+          body: JSON.stringify({
+            status
+          })
+        }
+      )
+
+      setOrders(prev =>
+        prev.map(order =>
+          order.id === id
+            ? {
+                ...order,
+                payment_status: status
+              }
+            : order
+        )
+      )
+
+    } catch (e) {
+
+      console.log(e)
+    }
+  }
+
+  const toggleExpand = (id) => {
+
+    setExpanded(
+      expanded === id
+        ? null
+        : id
+    )
+  }
+
+  const handleSort = (field) => {
+
+    if (sortField === field) {
+
+      setSortDirection(prev =>
+        prev === 'asc'
+          ? 'desc'
+          : 'asc'
+      )
+
+    } else {
+
+      setSortField(field)
+
+      setSortDirection('asc')
     }
   }
 
   if (loading) {
+
     return (
       <div className="orders-loading">
-        Загрузка заказов...
+        Загрузка...
       </div>
     )
   }
@@ -67,15 +186,20 @@ export default function OrdersManager() {
 
     <div className="orders-page">
 
-      <div className="orders-header">
+      <div className="orders-topbar">
 
         <h2>
           🧾 Заказы
         </h2>
 
-        <div className="orders-count">
-          Всего: {orders.length}
-        </div>
+        <input
+          type="text"
+          placeholder="Поиск..."
+          value={search}
+          onChange={e =>
+            setSearch(e.target.value)
+          }
+        />
 
       </div>
 
@@ -86,25 +210,61 @@ export default function OrdersManager() {
           <thead>
 
             <tr>
-              <th>ID</th>
-              <th>Клиент</th>
-              <th>Телефон</th>
-              <th>Email</th>
-              <th>Сумма</th>
-              <th>Оплата</th>
-              <th>Доставка</th>
-              <th>Дата</th>
+
+              <th onClick={() =>
+                handleSort('id')
+              }>
+                ID
+              </th>
+
+              <th onClick={() =>
+                handleSort(
+                  'customer_name'
+                )
+              }>
+                Клиент
+              </th>
+
+              <th>
+                Телефон
+              </th>
+
+              <th onClick={() =>
+                handleSort(
+                  'total_price'
+                )
+              }>
+                Сумма
+              </th>
+
+              <th>
+                Статус
+              </th>
+
+              <th onClick={() =>
+                handleSort(
+                  'created_at'
+                )
+              }>
+                Дата
+              </th>
+
             </tr>
 
           </thead>
 
           <tbody>
 
-            {orders.length > 0 ? (
+            {filteredOrders.map(order => (
 
-              orders.map(order => (
-
-                <tr key={order.id}>
+              <>
+                <tr
+                  key={order.id}
+                  onClick={() =>
+                    toggleExpand(order.id)
+                  }
+                  className="clickable"
+                >
 
                   <td>
                     #{order.id}
@@ -119,53 +279,118 @@ export default function OrdersManager() {
                   </td>
 
                   <td>
-                    {order.email || '-'}
-                  </td>
-
-                  <td className="price">
-                    {Number(order.total_price)
-                      .toLocaleString()} ₽
+                    {Number(
+                      order.total_price
+                    ).toLocaleString()} ₽
                   </td>
 
                   <td>
 
-                    <span
-                      className={`status ${getStatusClass(order.payment_status)}`}
+                    <select
+                      value={
+                        order.payment_status
+                      }
+
+                      onChange={e =>
+                        updateStatus(
+                          order.id,
+                          e.target.value
+                        )
+                      }
                     >
-                      {order.payment_status}
-                    </span>
+
+                      <option value="pending">
+                        pending
+                      </option>
+
+                      <option value="paid">
+                        paid
+                      </option>
+
+                      <option value="failed">
+                        failed
+                      </option>
+
+                    </select>
 
                   </td>
 
                   <td>
-                    {order.delivery_type}
-                  </td>
 
-                  <td>
-                    {new Date(order.created_at)
-                      .toLocaleString()}
+                    {new Date(
+                      order.created_at
+                    ).toLocaleString()}
+
                   </td>
 
                 </tr>
-              ))
 
-            ) : (
+                {expanded === order.id && (
 
-              <tr>
+                  <tr className="expanded-row">
 
-                <td colSpan="8">
+                    <td colSpan="6">
 
-                  <div className="empty-orders">
+                      <div className="expanded-content">
 
-                    Заказов пока нет
+                        <h4>
+                          📦 Товары
+                        </h4>
 
-                  </div>
+                        <div className="items-list">
 
-                </td>
+                          {order.items?.map(
+                            item => (
 
-              </tr>
+                              <div
+                                key={
+                                  item.product_id
+                                }
+                              >
 
-            )}
+                                {item.title}
+                                {' — '}
+                                {item.quantity}
+                                шт ×
+                                {' '}
+                                {item.price}
+                                ₽
+
+                              </div>
+                            )
+                          )}
+
+                        </div>
+
+                        <div className="delivery-info">
+
+                          <p>
+                            🚚 {
+                              order.city
+                            }, {
+                              order.street
+                            }, д. {
+                              order.house
+                            }
+                          </p>
+
+                          <p>
+                            ✉️ {
+                              order.email
+                            }
+                          </p>
+
+                        </div>
+
+                      </div>
+
+                    </td>
+
+                  </tr>
+                )}
+
+              </>
+            ))}
 
           </tbody>
 
