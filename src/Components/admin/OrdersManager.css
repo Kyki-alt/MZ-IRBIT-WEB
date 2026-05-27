@@ -79,3 +79,14 @@ select {
 .orders-loading {
   padding: 40px;
 }
+
+.filters {
+  display: flex;
+  gap: 10px;
+}
+
+.filters input {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}

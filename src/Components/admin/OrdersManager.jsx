@@ -4,20 +4,13 @@ import './OrdersManager.css'
 export default function OrdersManager() {
 
   const [orders, setOrders] = useState([])
-
   const [loading, setLoading] = useState(true)
-
-  const [expanded, setExpanded] =
-    useState(null)
-
-  const [search, setSearch] =
-    useState('')
-
-  const [sortField, setSortField] =
-    useState('id')
-
-  const [sortDirection, setSortDirection] =
-    useState('desc')
+  const [expanded, setExpanded] = useState(null)
+  const [search, setSearch] = useState('')
+  const [sortField, setSortField] = useState('id')
+  const [sortDirection, setSortDirection] = useState('desc')
+  const [dateFrom, setDateFrom] = useState('')
+  const [dateTo, setDateTo] = useState('')
 
   useEffect(() => {
     fetchOrders()
@@ -54,32 +47,56 @@ export default function OrdersManager() {
   // =========================
 
   const filteredOrders = useMemo(() => {
-    let filtered = [...orders]
+  let filtered = [...orders]
 
-    if (search.trim()) {
-      const q = search.toLowerCase()
+  const q = search.toLowerCase()
 
-      filtered = filtered.filter(order => {
-        const date = order.created_at
-          ? new Date(order.created_at)
-              .toLocaleString()
-              .toLowerCase()
-          : ''
+  if (search.trim()) {
+    filtered = filtered.filter(order => {
+      const dateText = order.created_at
+        ? new Date(order.created_at)
+            .toLocaleString()
+            .toLowerCase()
+        : ''
 
-        const delivery =
-          order.delivery_type === 'pickup'
-            ? 'самовывоз'
-            : 'доставка'
+      const delivery =
+        order.delivery_type === 'pickup'
+          ? 'самовывоз'
+          : 'доставка'
 
-        return (
-          String(order.id).includes(q) ||
-          order.customer_name?.toLowerCase().includes(q) ||
-          order.phone?.toLowerCase().includes(q) ||
-          date.includes(q) ||
-          delivery.includes(q)
-        )
-      })
+      return (
+        String(order.id).includes(q) ||
+        order.customer_name?.toLowerCase().includes(q) ||
+        order.phone?.toLowerCase().includes(q) ||
+        dateText.includes(q) ||
+        delivery.includes(q)
+      )
+    })
+  }
+
+    // =========================
+    // 📅 FILTER BY DATE RANGE
+    // =========================
+
+    if (dateFrom) {
+      const from = new Date(dateFrom)
+      filtered = filtered.filter(order =>
+        new Date(order.created_at) >= from
+      )
     }
+
+    if (dateTo) {
+      const to = new Date(dateTo)
+      to.setHours(23, 59, 59, 999) // включаем весь день
+
+      filtered = filtered.filter(order =>
+        new Date(order.created_at) <= to
+      )
+    }
+
+    // =========================
+    // SORT
+    // =========================
 
     filtered.sort((a, b) => {
       const aValue = a[sortField]
@@ -93,7 +110,7 @@ export default function OrdersManager() {
     })
 
     return filtered
-  }, [orders, search, sortField, sortDirection])
+  }, [orders, search, sortField, sortDirection, dateFrom, dateTo])
 
   // =========================
   // STATUS UPDATE
@@ -184,6 +201,22 @@ export default function OrdersManager() {
         <h2>
           🧾 Заказы
         </h2>
+
+        <div className="filters">
+
+        <input
+          type="date"
+          value={dateFrom}
+          onChange={(e) => setDateFrom(e.target.value)}
+        />
+
+        <input
+          type="date"
+          value={dateTo}
+          onChange={(e) => setDateTo(e.target.value)}
+        />
+
+      </div>
 
         <input
           type="text"
