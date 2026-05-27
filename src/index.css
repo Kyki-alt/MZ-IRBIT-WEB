@@ -712,185 +712,118 @@ header .shop-cart .summa {
    МОДАЛЬНОЕ ОКНО ТОВАРА
 ========================================================= */
 
+.full-item {
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0,0,0,.65);
+
+    z-index: 4999;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 20px;
+}
+
+/* Контейнер модального окна */
+.full-item > div {
+    width: 450px;
+    max-width: 95vw;
+
+    background: rgba(255,255,255,.96);
+
+    border-radius: 24px;
+
+    padding: 30px;
+
+    position: relative;
+
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
 /* =========================================================
-   PRODUCT MODAL (как новости)
+   ИЗОБРАЖЕНИЕ В МОДАЛКЕ
 ========================================================= */
 
-.full-item {
-  position: fixed;
-  inset: 0;
-
-  background: rgba(0,0,0,.55);
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  padding: 20px;
-
-  z-index: 9999;
-
-  animation: fadeIn .25s ease;
-}
-
-.full-item > div {
-  width: 500px;
-  max-width: 95vw;
-
-  background: #fff;
-
-  border-radius: 32px;
-
-  overflow: hidden;
-
-  box-shadow:
-    0 20px 60px rgba(0,0,0,.25);
-
-  animation: modalShow .28s ease;
-
-  position: relative;
-}
-
-/* картинка сверху */
 .full-item img {
-  width: 100%;
-  height: 360px;
+    width: 220px;
 
-  object-fit: contain;
+    height: auto;
 
-  background:
-    linear-gradient(
-      180deg,
-      #f6fbff 0%,
-      #eef8ff 100%
-    );
+    object-fit: contain;
 
-  padding: 30px;
+    display: block;
 
-  margin: 0;
+    margin: 0 auto 20px;
 }
 
-/* контент */
-.full-item-content {
-  padding: 28px;
-}
 
-.full-item h2 {
-  margin: 0 0 14px;
+/* =========================================================
+   КНОПКА ЗАКРЫТИЯ МОДАЛКИ
+========================================================= */
 
-  font-size: 34px;
-  font-weight: 800;
-
-  color: #222;
-}
-
-.full-item p {
-  margin: 0 0 18px;
-
-  color: #666;
-
-  line-height: 1.7;
-
-  font-size: 17px;
-}
-
-.full-item b {
-  display: block;
-
-  font-size: 36px;
-  font-weight: 800;
-
-  color: #149914;
-
-  margin-bottom: 24px;
-}
-
-/* кнопка + */
-.full-item .add-to-cart {
-  position: absolute;
-
-  right: 26px;
-  bottom: 26px;
-
-  width: 56px;
-  height: 56px;
-
-  border-radius: 50%;
-
-  background: linear-gradient(
-    135deg,
-    #25bdf2,
-    #58d6ff
-  );
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  color: white;
-
-  font-size: 30px;
-  font-weight: 700;
-
-  cursor: pointer;
-
-  box-shadow:
-    0 10px 25px rgba(37,189,242,.35);
-
-  transition: .25s ease;
-}
-
-.full-item .add-to-cart:hover {
-  transform: scale(1.08);
-}
-
-/* крестик */
 .close-modal {
-  position: absolute;
+    position: absolute;
 
-  top: 18px;
-  right: 18px;
+    top: 15px;
+    right: 15px;
 
-  width: 42px;
-  height: 42px;
+    width: 30px;
+    height: 30px;
 
-  border: none;
-  border-radius: 50%;
+    border: none;
+    border-radius: 50%;
 
-  background: rgba(255,255,255,.9);
+    background: #77d1fa;
 
-  color: #333;
+    color: #fff;
 
-  font-size: 24px;
+    font-size: 22px;
+    font-weight: bold;
 
-  cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-  z-index: 20;
+    cursor: pointer;
 
-  transition: .25s ease;
+    transition: all 0.3s ease;
+
+    z-index: 10;
 }
 
+/* Hover кнопки закрытия */
 .close-modal:hover {
-  transform: rotate(90deg);
+    transform: rotate(90deg) scale(1.1);
+
+    background: #ff3b3b;
 }
 
-/* animation */
-@keyframes modalShow {
-  from {
-    transform: scale(.92);
-    opacity: 0;
-  }
 
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
+/* =========================================================
+   АНИМАЦИЯ ПОЯВЛЕНИЯ МОДАЛКИ
+========================================================= */
+
+@keyframes showItem {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
 
 /* =========================================================
    ОСНОВНАЯ СЕТКА ТОВАРОВ
