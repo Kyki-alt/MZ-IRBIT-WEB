@@ -37,11 +37,7 @@ export default function AdminPanel() {
         return <CategoriesManager />
 
       case 'settings':
-        return (
-          <div>
-            <h2>⚙️ Настройки</h2>
-          </div>
-        )
+        return <AdminSettings />
 
       default:
         return (
