@@ -3,6 +3,7 @@ import './AdminPanel.css'
 import { useNavigate } from 'react-router-dom'
 import ProductsManager from '../Components/admin/products/ProductsManager'
 import OrdersManager from '../Components/admin/OrdersManager'
+import NewsManager from '../Components/admin/news/NewsManager'
 
 export default function AdminPanel() {
 
