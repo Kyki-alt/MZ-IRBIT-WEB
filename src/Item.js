@@ -33,8 +33,9 @@ export class Item extends Component {
     }
 
     return (
-    <div className='item'>
+    <div className='item'
         onClick={() => this.props.onShowItem(item)}
+        >
 
         <div className='item-image'>
           <img
