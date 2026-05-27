@@ -179,155 +179,123 @@ export default function OrdersManager() {
   // ================= RENDER =================
 
   return (
-    <div className="orders-page">
+  <div className="orders-admin">
 
-      <div className="orders-topbar">
+    {/* HEADER как NewsManager */}
+    <div className="orders-header-admin">
 
-        <div className="left">
-          <h2>🧾 Заказы</h2>
-        </div>
+      <h2>🧾 Заказы</h2>
 
-        <div className="center">
-          <input
-            placeholder="Поиск..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
+      <input
+        placeholder="Поиск заказов..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
 
-        <div className="right">
+      <button onClick={() => setShowDateFilter(true)}>
+        📅 Фильтр
+      </button>
 
-          <button onClick={() => setShowDateFilter(true)}>
-            📅 Фильтр
-          </button>
+    </div>
 
-        </div>
+    {/* GRID вместо таблицы */}
+    <div className="orders-grid">
 
-      </div>
+      {filteredOrders.map(order => (
+        <div key={order.id} className="order-card-admin">
 
-      <div className="orders-table-wrapper">
+          {/* TOP */}
+          <div className="order-card-top" onClick={() => toggleExpand(order.id)}>
 
-        <table className="orders-table">
+            <h3>Заказ #{order.id}</h3>
 
-          <thead>
-            <tr>
-              <th onClick={() => handleSort('id')}>ID</th>
-              <th onClick={() => handleSort('customer_name')}>Клиент</th>
-              <th>Телефон</th>
-              <th onClick={() => handleSort('total_price')}>Сумма</th>
-              <th>Статус</th>
-              <th onClick={() => handleSort('created_at')}>Дата</th>
-            </tr>
-          </thead>
-
-          <tbody>
-
-            {filteredOrders.map(order => (
-              <React.Fragment key={order.id}>
-
-                <tr
-                  className="clickable"
-                  onClick={() => toggleExpand(order.id)}
-                >
-                  <td>#{order.id}</td>
-                  <td>{order.customer_name}</td>
-                  <td>{order.phone}</td>
-
-                  <td>
-                    {Number(order.total_price).toLocaleString()} ₽
-                  </td>
-
-                  <td>
-                    <select
-                      value={order.payment_status}
-                      onChange={(e) =>
-                        updateStatus(order.id, e.target.value)
-                      }
-                    >
-                      <option value="pending">в ожидании оплаты</option>
-                      <option value="paid">оплачен</option>
-                      <option value="failed">отменен</option>
-                    </select>
-                  </td>
-
-                  <td>
-                    {new Date(order.created_at).toLocaleString()}
-                  </td>
-                </tr>
-
-                {expanded === order.id && (
-                  <tr>
-                    <td colSpan="6">
-
-                      <div className="expanded-content">
-
-                        <h4>📦 Товары</h4>
-
-                        {order.items?.map(item => (
-                          <div key={item.product_id}>
-                            {item.title} — {item.quantity} × {item.price} ₽
-                          </div>
-                        ))}
-
-                        <p>
-                          {order.delivery_type === 'pickup'
-                            ? '📦 Самовывоз'
-                            : '🚚 Курьерская доставка'}
-                        </p>
-
-                      </div>
-
-                    </td>
-                  </tr>
-                )}
-
-              </React.Fragment>
-            ))}
-
-          </tbody>
-
-        </table>
-      </div>
-
-      {/* MODAL */}
-      {showDateFilter && (
-        <div className="modal-overlay" onClick={() => setShowDateFilter(false)}>
-
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-
-            <h3>📅 Фильтр</h3>
-
-            <div className="quick-filters">
-              <button onClick={() => applyQuickFilter('today')}>Сегодня</button>
-              <button onClick={() => applyQuickFilter('yesterday')}>Вчера</button>
-              <button onClick={() => applyQuickFilter('7days')}>7 дней</button>
-              <button onClick={() => applyQuickFilter('30days')}>30 дней</button>
-              <button onClick={() => applyQuickFilter('month')}>Месяц</button>
-            </div>
-
-            <label>От</label>
-            <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
-
-            <label>До</label>
-            <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
-
-            <div className="modal-actions">
-
-              <button onClick={() => { setDateFrom(''); setDateTo('') }}>
-                Сброс
-              </button>
-
-              <button onClick={() => setShowDateFilter(false)}>
-                Закрыть
-              </button>
-
-            </div>
+            <span className={`status ${order.payment_status}`}>
+              {order.payment_status}
+            </span>
 
           </div>
 
+          {/* INFO */}
+          <div className="order-info">
+
+            <p>👤 {order.customer_name}</p>
+            <p>📞 {order.phone}</p>
+            <p>💰 {Number(order.total_price).toLocaleString()} ₽</p>
+            <p>📅 {new Date(order.created_at).toLocaleString()}</p>
+
+          </div>
+
+          {/* STATUS */}
+          <select
+            value={order.payment_status}
+            onChange={(e) => updateStatus(order.id, e.target.value)}
+          >
+            <option value="pending">в ожидании</option>
+            <option value="paid">оплачен</option>
+            <option value="failed">отменен</option>
+          </select>
+
+          {/* EXPANDED */}
+          {expanded === order.id && (
+            <div className="order-expanded">
+
+              <h4>📦 Товары</h4>
+
+              {order.items?.map(item => (
+                <div key={item.product_id}>
+                  {item.title} — {item.quantity} × {item.price} ₽
+                </div>
+              ))}
+
+              <p>
+                {order.delivery_type === 'pickup'
+                  ? '📦 Самовывоз'
+                  : '🚚 Доставка'}
+              </p>
+
+            </div>
+          )}
+
         </div>
-      )}
+      ))}
 
     </div>
-  )
+
+    {/* MODAL (оставляем как есть) */}
+    {showDateFilter && (
+      <div className="modal-overlay" onClick={() => setShowDateFilter(false)}>
+        <div className="modal" onClick={(e) => e.stopPropagation()}>
+
+          <h3>📅 Фильтр</h3>
+
+          <div className="quick-filters">
+            <button onClick={() => applyQuickFilter('today')}>Сегодня</button>
+            <button onClick={() => applyQuickFilter('yesterday')}>Вчера</button>
+            <button onClick={() => applyQuickFilter('7days')}>7 дней</button>
+            <button onClick={() => applyQuickFilter('30days')}>30 дней</button>
+            <button onClick={() => applyQuickFilter('month')}>Месяц</button>
+          </div>
+
+          <label>От</label>
+          <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
+
+          <label>До</label>
+          <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
+
+          <div className="modal-actions">
+            <button onClick={() => { setDateFrom(''); setDateTo('') }}>
+              Сброс
+            </button>
+
+            <button onClick={() => setShowDateFilter(false)}>
+              Закрыть
+            </button>
+          </div>
+
+        </div>
+      </div>
+    )}
+
+  </div>
+)
 }
