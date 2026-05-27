@@ -86,7 +86,6 @@ export default function AdminSettings() {
 
             <div>
               <h3>{admin.login}</h3>
-              <p>ID: {admin.id}</p>
             </div>
 
             <span className="admin-date">
