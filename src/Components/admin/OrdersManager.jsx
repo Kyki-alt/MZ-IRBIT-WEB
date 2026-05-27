@@ -364,21 +364,20 @@ export default function OrdersManager() {
 
                         <div className="delivery-info">
 
-                          <p>
-                            🚚 {
-                              order.city
-                            }, {
-                              order.street
-                            }, д. {
-                              order.house
-                            }
-                          </p>
+                          {order.delivery_type === 'pickup' ? (
 
                           <p>
-                            ✉️ {
-                              order.email
-                            }
+                            📦 Самовывоз
                           </p>
+
+                        ) : (
+
+                          <p>
+                            🚚 {order.city}, {order.street}, д. {order.house}
+                            {order.flat ? `, кв. ${order.flat}` : ''}
+                          </p>
+
+                        )}
 
                         </div>
 
