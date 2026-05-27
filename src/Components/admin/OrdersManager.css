@@ -25,12 +25,24 @@
 }
 
 .orders-header-admin button {
-  background: #2563eb;
+  background: #38bdf8;
   color: white;
   border: none;
   padding: 10px 14px;
   border-radius: 10px;
   cursor: pointer;
+}
+
+/* hover */
+.orders-header-admin button:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+/* активная кнопка */
+.orders-header-admin button.active {
+  background: #0ea5e9;
+  box-shadow: 0 8px 20px rgba(14,165,233,0.3);
 }
 
 /* GRID */
