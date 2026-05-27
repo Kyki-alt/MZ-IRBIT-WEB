@@ -10,15 +10,29 @@ export default function OrdersManager() {
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch('https://mz-irbit.onrender.com/orders')
-      const data = await res.json()
+      const res = await fetch(
+            'https://mz-irbit.onrender.com/orders'
+          )
 
-      setOrders(data)
-    } catch (err) {
-      console.log('Ошибка загрузки заказов', err)
-    } finally {
-      setLoading(false)
-    }
+          const data = await res.json()
+
+          setOrders(
+            Array.isArray(data) ? data : []
+          )
+
+        } catch (err) {
+
+          console.log(
+            'Ошибка загрузки заказов',
+            err
+          )
+
+          setOrders([])
+
+        } finally {
+
+          setLoading(false)
+        }
   }
 
   if (loading) return <p>Загрузка заказов...</p>
