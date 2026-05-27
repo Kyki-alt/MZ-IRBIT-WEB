@@ -11,6 +11,7 @@ export default function OrdersManager() {
   const [sortDirection, setSortDirection] = useState('desc')
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
+  const [showDateFilter, setShowDateFilter] = useState(false)
 
   useEffect(() => {
     fetchOrders()
@@ -198,34 +199,27 @@ export default function OrdersManager() {
 
       <div className="orders-topbar">
 
-        <h2>
-          🧾 Заказы
-        </h2>
+        <div className="left">
+          <h2>🧾 Заказы</h2>
+        </div>
 
-        <div className="filters">
+        <div className="center">
+          <input
+            type="text"
+            placeholder="Поиск по заказам..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
 
-        <input
-          type="date"
-          value={dateFrom}
-          onChange={(e) => setDateFrom(e.target.value)}
-        />
-
-        <input
-          type="date"
-          value={dateTo}
-          onChange={(e) => setDateTo(e.target.value)}
-        />
-
-      </div>
-
-        <input
-          type="text"
-          placeholder="Поиск..."
-          value={search}
-          onChange={e =>
-            setSearch(e.target.value)
-          }
-        />
+        <div className="right">
+          <button
+            className="filter-btn"
+            onClick={() => setShowDateFilter(true)}
+          >
+            📅 Фильтр
+          </button>
+        </div>
 
       </div>
 

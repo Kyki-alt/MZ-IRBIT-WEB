@@ -2,25 +2,62 @@
   width: 100%;
 }
 
+/* =========================
+   TOPBAR (лево / центр / право)
+========================= */
+
 .orders-topbar {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
   margin-bottom: 20px;
 }
 
-.orders-topbar input {
-  width: 260px;
-  padding: 12px;
+.orders-topbar .left h2 {
+  margin: 0;
+}
+
+.orders-topbar .center {
+  display: flex;
+  justify-content: center;
+}
+
+.orders-topbar .center input {
+  width: 320px;
+  padding: 10px 14px;
   border-radius: 10px;
   border: 1px solid #ddd;
+  outline: none;
 }
+
+.orders-topbar .right {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.filter-btn {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 10px;
+  background: #111827;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.filter-btn:hover {
+  opacity: 0.9;
+}
+
+/* =========================
+   TABLE
+========================= */
 
 .orders-table-wrapper {
   overflow-x: auto;
   background: white;
   border-radius: 18px;
-  box-shadow:
-    0 5px 20px rgba(0,0,0,0.06);
+  box-shadow: 0 5px 20px rgba(0,0,0,0.06);
 }
 
 .orders-table {
@@ -50,6 +87,10 @@
   background: #f9fafb;
 }
 
+/* =========================
+   EXPANDED ORDER
+========================= */
+
 .expanded-row td {
   background: #fafafa;
 }
@@ -71,22 +112,83 @@
   color: #555;
 }
 
+/* =========================
+   STATUS SELECT
+========================= */
+
 select {
   padding: 8px;
   border-radius: 8px;
+  border: 1px solid #ddd;
 }
+
+/* =========================
+   MODAL FILTER
+========================= */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal {
+  width: 320px;
+  background: white;
+  padding: 20px;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modal input {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.modal-actions button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* =========================
+   LOADING
+========================= */
 
 .orders-loading {
   padding: 40px;
 }
 
-.filters {
-  display: flex;
-  gap: 10px;
-}
+/* =========================
+   RESPONSIVE
+========================= */
 
-.filters input {
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+@media (max-width: 768px) {
+  .orders-topbar {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .orders-topbar .center input {
+    width: 100%;
+  }
+
+  .orders-topbar .right {
+    justify-content: center;
+  }
 }
