@@ -410,6 +410,51 @@ export default function OrdersManager() {
 
       </div>
 
+        {showDateFilter && (
+        <div className="modal-overlay" onClick={() => setShowDateFilter(false)}>
+
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+
+            <h3>📅 Фильтр по дате</h3>
+
+            <label>От</label>
+            <input
+              type="date"
+              value={dateFrom}
+              onChange={(e) => setDateFrom(e.target.value)}
+            />
+
+            <label>До</label>
+            <input
+              type="date"
+              value={dateTo}
+              onChange={(e) => setDateTo(e.target.value)}
+            />
+
+            <div className="modal-actions">
+
+              <button
+                onClick={() => {
+                  setDateFrom('')
+                  setDateTo('')
+                }}
+              >
+                Сбросить
+              </button>
+
+              <button
+                onClick={() => setShowDateFilter(false)}
+              >
+                Применить
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+      )}
+
     </div>
   )
 }
