@@ -29,14 +29,7 @@ export default function AdminPanel() {
         return <OrdersManager />
 
       case 'news':
-        return (
-          <div>
-            <h2>📰 Новости</h2>
-            <p>
-              Управление новостями
-            </p>
-          </div>
-        )
+        return <NewsManager />
 
       case 'categories':
         return (
