@@ -858,6 +858,7 @@ main .item {
     border: 1px solid rgba(255,255,255,0.3);
 
     position: relative;
+    cursor: pointer;
 
     transition:
         transform 0.3s ease,
