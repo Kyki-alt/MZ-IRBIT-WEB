@@ -25,7 +25,7 @@ export default function News() {
       try {
 
         const res = await axios.get(
-          `${API_URL}/news`
+          `${API_URL}/api/news`
         )
 
         setNews(res.data)
