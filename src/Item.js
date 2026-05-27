@@ -34,6 +34,7 @@ export class Item extends Component {
 
     return (
     <div className='item'>
+        onClick={() => this.props.onShowItem(item)}
 
         <div className='item-image'>
           <img
@@ -56,38 +57,43 @@ export class Item extends Component {
 
           ) : !orderItem ? (
 
-            <div
-              className='add-to-cart'
-              onClick={() => this.props.onAdd(item)}
-            >
-              +
-            </div>
+        <div
+          className='add-to-cart'
+          onClick={(e) => {
+            e.stopPropagation()
+            this.props.onAdd(item)
+          }}
+        >
+          +
+        </div>
 
           ) : (
 
             <div className='card-quantity-controls'>
 
-              <button
-                className='card-quantity-btn'
-                onClick={() =>
-                  this.props.decreaseQuantity(item.id)
-                }
-              >
-                -
-              </button>
+            <button
+              className='card-quantity-btn'
+              onClick={(e) => {
+                e.stopPropagation()
+                this.props.decreaseQuantity(item.id)
+              }}
+            >
+              -
+            </button>
 
               <span className='card-quantity-value'>
                 {orderItem.quantity}
               </span>
 
-              <button
-                className='card-quantity-btn'
-                onClick={() =>
-                  this.props.increaseQuantity(item.id)
-                }
-              >
-                +
-              </button>
+            <button
+              className='card-quantity-btn'
+              onClick={(e) => {
+                e.stopPropagation()
+                this.props.increaseQuantity(item.id)
+              }}
+            >
+              +
+            </button>
 
             </div>
 
