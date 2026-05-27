@@ -112,3 +112,34 @@
   border-radius: 10px;
   font-size: 13px;
 }
+
+.status-filters {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 15px 0;
+}
+
+/* обычная кнопка */
+.status-filters button {
+  padding: 12px 22px;
+  border-radius: 999px;
+  border: none;
+  background: #38bdf8;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+  font-size: 14px;
+}
+
+/* hover */
+.status-filters button:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+/* активная кнопка */
+.status-filters button.active {
+  background: #0ea5e9;
+  box-shadow: 0 8px 20px rgba(14,165,233,0.3);
+}

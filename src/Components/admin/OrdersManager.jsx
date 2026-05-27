@@ -200,19 +200,41 @@ export default function OrdersManager() {
         onChange={(e) => setSearch(e.target.value)}
       />
 
-      <select
-        value={statusFilter}
-        onChange={(e) => setStatusFilter(e.target.value)}
-        >
-        <option value="all">Все статусы</option>
-        <option value="paid">Оплачен</option>
-        <option value="pending">В процессе</option>
-        <option value="failed">Отменен</option>
-      </select>
-
       <button onClick={() => setShowDateFilter(true)}>
-        📅 Фильтр
+        📅 Выбор даты
       </button>
+
+      <div className="status-filters">
+
+        <button
+          className={statusFilter === 'all' ? 'active' : ''}
+          onClick={() => setStatusFilter('all')}
+        >
+          Все
+        </button>
+
+        <button
+          className={statusFilter === 'paid' ? 'active' : ''}
+          onClick={() => setStatusFilter('paid')}
+        >
+          Оплачено
+        </button>
+
+        <button
+          className={statusFilter === 'pending' ? 'active' : ''}
+          onClick={() => setStatusFilter('pending')}
+        >
+          В процессе
+        </button>
+
+        <button
+          className={statusFilter === 'failed' ? 'active' : ''}
+          onClick={() => setStatusFilter('failed')}
+        >
+          Отменено
+        </button>
+
+      </div>
 
     </div>
 
