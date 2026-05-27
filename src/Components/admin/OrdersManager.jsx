@@ -204,7 +204,9 @@ export default function OrdersManager() {
         📅 Выбор даты
       </button>
 
-      <div className="status-filters">
+    </div>
+
+          <div className="status-filters">
 
         <button
           className={statusFilter === 'all' ? 'active' : ''}
@@ -235,8 +237,6 @@ export default function OrdersManager() {
         </button>
 
       </div>
-
-    </div>
 
     {/* GRID вместо таблицы */}
     <div className="orders-grid">
