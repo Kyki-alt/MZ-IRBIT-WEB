@@ -350,7 +350,7 @@ header .shop-cart-button svg {
    ВЫПАДАЮЩАЯ КОРЗИНА
 ========================================================= */
 
-header .shop-cart {
+header .shop-cart  {
     position: fixed;
 
     top: 95px;
@@ -417,7 +417,7 @@ button:disabled {
    ТОВАР В КОРЗИНЕ
 ========================================================= */
 
-header .shop-cart .item {
+header .shop-cart .cart-item {
     display: flex;
     align-items: center;
 
@@ -433,7 +433,7 @@ header .shop-cart .item {
    КАРТИНКА
 ========================================================= */
 
-header .shop-cart .item img {
+header .shop-cart .cart-item img {
     width: 85px;
     height: 85px;
 
