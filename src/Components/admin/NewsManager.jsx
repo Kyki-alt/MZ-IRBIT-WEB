@@ -109,8 +109,11 @@ export default function NewsManager() {
 
         <button
           onClick={() => {
-            setShowForm(p => !p)
-            resetForm()
+            if (showForm) {
+              resetForm()
+            } else {
+              setShowForm(true)
+            }
           }}
         >
           {showForm ? 'Закрыть' : 'Добавить'}
@@ -145,7 +148,7 @@ export default function NewsManager() {
             <img src={`${API_URL}${image}`} alt="" />
           )}
 
-          <button disabled={loading}>
+          <button type="submit" disabled={loading}>
             {editingId ? 'Обновить' : 'Создать'}
           </button>
 
