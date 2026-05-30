@@ -117,58 +117,862 @@ export default function Checkout() {
 
     // ФИО
     if (!name.trim()) {
-      newErrors.name = 'Введите ФИО'
-    }
 
-    // телефон
-    const cleanPhone = phone.replace(/\D/g, '')
+      newErrors.name =
+        'Введите ФИО'
 
-    if (!cleanPhone) {
-      newErrors.phone = 'Введите телефон'
-    } else if (
-      !(
-        cleanPhone.length === 11 &&
-        (cleanPhone.startsWith('7') || cleanPhone.startsWith('8'))
-      )
-    ) {
-      newErrors.phone = 'Неверный номер телефона'
-    }
+    } else {
 
-    // email
-    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = 'Некорректный email'
-    }
+      const fullName =
+        name
+          .trim()
+          .replace(/\s+/g, ' ')
 
-    // 🚚 ДОСТАВКА (БЕЗ ИНТЕРНЕТА)
-    if (delivery === 'delivery') {
-      const cityClean = city.replace('г. ', '').trim()
-      const streetClean = street.replace('ул. ', '').trim()
-      const houseClean = house.trim()
+      // только русские буквы
+      const fioRegex =
+        /^[А-Яа-яЁё\s-]+$/
 
-      // город
-      if (cityClean.length < 2 || !/^[А-Яа-яЁё\s-]+$/.test(cityClean)) {
-        newErrors.city = 'Некорректный город'
+      if (!fioRegex.test(fullName)) {
+
+        newErrors.name =
+          'Допустимы только русские буквы'
+
+      } else {
+
+        const parts =
+          fullName.split(' ')
+
+        // минимум имя + фамилия
+        if (parts.length < 2) {
+
+          newErrors.name =
+            'Введите имя и фамилию'
+
+        } else {
+
+          // проверка частей ФИО
+          const invalidPart =
+            parts.some(part => {
+
+              // минимум 2 буквы
+              if (part.length < 2) {
+                return true
+              }
+
+              // странные наборы согласных
+              if (
+                /^[БВГДЖЗЙКЛМНПРСТФХЦЧШЩ]{2,}$/i.test(part)
+              ) {
+                return true
+              }
+
+              return false
+            })
+
+          if (invalidPart) {
+
+            newErrors.name =
+              'Введите корректное ФИО'
+          }
+
+          // подозрительные слова
+          const suspiciousWords = [
+            'Тест',
+            'Admin',
+            'User',
+            'Qwerty',
+            'Аааа',
+            'Ыыыы'
+          ]
+
+          const hasSuspiciousWord =
+            parts.some(part =>
+              suspiciousWords.includes(part)
+            )
+
+          if (hasSuspiciousWord) {
+
+            newErrors.name =
+              'Введите корректное ФИО'
+          }
+
+          // повторяющиеся символы
+          const weirdLetters =
+            /(.)\1{3,}/
+
+          if (
+            weirdLetters.test(fullName)
+          ) {
+
+            newErrors.name =
+              'Введите корректное ФИО'
+          }
+        }
       }
 
-      // улица
-      if (streetClean.length < 3 || !/^[А-Яа-яЁё0-9\s.-]+$/.test(streetClean)) {
-        newErrors.street = 'Некорректная улица'
+      // Телефон
+      const cleanPhone =
+        phone.replace(/\D/g, '')
+
+      if (!cleanPhone) {
+
+        newErrors.phone =
+          'Введите телефон'
+
+      } else {
+
+        const isValidPhone =
+          cleanPhone.length === 11 &&
+          (
+            cleanPhone.startsWith('7') ||
+            cleanPhone.startsWith('8')
+          )
+
+        if (!isValidPhone) {
+          newErrors.phone =
+            'Неверный номер телефона'
+        }
       }
 
-      // дом
-      if (!/^[0-9]{1,4}[а-яА-Яa-zA-Z]?$/.test(houseClean)) {
-        newErrors.house = 'Некорректный дом'
+      // Email
+      if (email.trim() !== '') {
+
+        const emailRegex =
+          /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+        if (!emailRegex.test(email)) {
+          newErrors.email =
+            'Некорректный email'
+        }
       }
 
-      // 🚨 анти-абракадабра (простая логика)
-      const weird = /(.)\1{3,}/
-      if (weird.test(cityClean + streetClean + houseClean)) {
-        newErrors.city = 'Подозрительный адрес'
+      // Проверка доставки
+      if (delivery === 'delivery') {
+        const newErrors = {}
+
+        // город
+        const cityClean = city.replace('г. ', '').trim()
+        const cityValid = /^[А-Яа-яЁё\s-]{2,}$/.test(cityClean)
+
+        if (!cityClean) {
+          newErrors.city = 'Введите город'
+        } else if (!cityValid) {
+          newErrors.city = 'Некорректный город'
+        }
+
+        // улица
+        const streetClean = street.replace('ул. ', '').trim()
+        const streetValid = /^[А-Яа-яЁё0-9\s.-]{3,}$/.test(streetClean)
+
+        if (!streetClean) {
+          newErrors.street = 'Введите улицу'
+        } else if (!streetValid) {
+          newErrors.street = 'Некорректная улица'
+        }
+
+        // дом
+        const houseValid = /^[0-9]+[а-яА-Яa-zA-Z]?$/.test(house.trim())
+
+        if (!house.trim()) {
+          newErrors.house = 'Введите дом'
+        } else if (!houseValid) {
+          newErrors.house = 'Некорректный номер дома'
+        }
+
+        // анти-абракадабра
+        const weirdPattern = /(.)\1{3,}/
+        if (weirdPattern.test(city + street + house)) {
+          newErrors.city = 'Подозрительный адрес'
+        }
+
+        setErrors(prev => ({ ...prev, ...newErrors }))
       }
+
+      
+  const handleOrder = async () => {
+    if (loading) return
+    setLoading(true)
+
+    if (!validate()) {
+      setLoading(false)
+      return
     }
 
-    setErrors(newErrors)
 
-    return Object.keys(newErrors).length === 0
+  if (delivery === 'delivery') {
+    if (!city || !street || !house) {
+      setAddressError('Заполните адрес доставки')
+      setLoading(false)
+      return
+    }
+
+     // -------------------------
+  // город
+  // -------------------------
+  const cityClean = city
+    .replace('г. ', '')
+    .trim()
+
+    if (cityClean.length < 2) {
+      newErrors.city = 'Введите город'
+    }
+
+    const cityValid = /^[А-Яа-яЁё\s-]{2,}$/.test(cityClean)
+
+    if (!cityValid) {
+      newErrors.city = 'Некорректный город'
+    }
+
+    // -------------------------
+    // улица
+    // -------------------------
+    const streetClean = street
+      .replace('ул. ', '')
+      .trim()
+
+    if (streetClean.length < 3) {
+      newErrors.street = 'Введите улицу'
+    }
+
+    const streetValid = /^[А-Яа-яЁё0-9\s.-]{3,}$/.test(streetClean)
+
+    if (!streetValid) {
+      newErrors.street = 'Некорректная улица'
+    }
+
+    // -------------------------
+    // дом
+    // -------------------------
+    const houseValid = /^[0-9]+[а-яА-Яa-zA-Z]?$/.test(house.trim())
+
+    if (!houseValid) {
+      newErrors.house = 'Некорректный номер дома'
+    }
+
+    // -------------------------
+    // анти-абракадабра (простая защита)
+    // -------------------------
+    const weirdPattern = /(.)\1{3,}/
+
+    if (weirdPattern.test(city + street + house)) {
+      newErrors.city = 'Подозрительный адрес'
+    }
   }
+
+    setAddressError('')
+  }
+
+    // -------------------------
+    // 2. проверка оплаты
+    // -------------------------
+    if (!payment) {
+      setPaymentError('Выберите способ оплаты')
+      setLoading(false)
+      return
+    }
+
+    setPaymentError('')
+
+    // -------------------------
+    // 3. проверка корзины
+    // -------------------------
+    let validateData
+
+    try {
+      const validateResponse = await fetch(
+        'https://mz-irbit.onrender.com/cart/validate',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            items: cartItems
+          })
+        }
+      )
+
+      validateData = await validateResponse.json()
+    } catch (error) {
+      console.log(error)
+      setLoading(false)
+      setAddressError('Ошибка проверки корзины')
+      return
+    }
+
+    // -------------------------
+    // 4. обновляем корзину
+    // -------------------------
+    const updatedCart = cartItems.map(item => {
+      const check = validateData.items?.find(i => i.id === item.id)
+
+      if (!check) return item
+
+      if (check.status === 'out_of_stock') {
+        return { ...item, disabled: true, quantity: 0 }
+      }
+
+      if (check.status === 'partial') {
+        return { ...item, quantity: check.available }
+      }
+
+      return item
+    })
+
+    setCartItems(updatedCart)
+    localStorage.setItem('cart', JSON.stringify(updatedCart))
+
+    const validItems = updatedCart.filter(
+      item => !item.disabled && item.quantity > 0
+    )
+
+    if (validItems.length === 0) {
+      setLoading(false)
+      setAddressError('Нет товаров для покупки')
+      return
+    }
+
+    // -------------------------
+    // 5. создаём заказ
+    // -------------------------
+    const orderResponse = await fetch(
+      'https://mz-irbit.onrender.com/orders',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          customer_name: name,
+          phone,
+          email,
+          delivery_type: delivery,
+          payment_type: payment,
+          city,
+          street,
+          house,
+          flat,
+          total_price: totalPrice,
+          items: validItems
+        })
+      }
+    )
+
+    const orderData = await orderResponse.json()
+    const orderId = orderData.orderId
+
+    // -------------------------
+    // 6. оплата при получении
+    // -------------------------
+    if (payment === 'cash') {
+      localStorage.removeItem('cart')
+
+      window.location.href =
+        `/#/payment-result?status=cod&orderId=${orderId}`
+
+      return
+    }
+
+    // -------------------------
+    // 7. WebMoney
+    // -------------------------
+    const rubAmount = totalPrice
+
+    const rateResponse = await fetch(
+      'https://open.er-api.com/v6/latest/RUB'
+    )
+
+    const rateData = await rateResponse.json()
+
+    const usdRate = rateData.rates.USD
+    const usdAmount = (rubAmount * usdRate).toFixed(2)
+
+    if (payment === 'wm') {
+      const form = document.createElement('form')
+      form.method = 'POST'
+      form.action =
+        'https://merchant.webmoney.ru/lmi/payment.asp'
+
+      const fields = {
+        LMI_PAYEE_PURSE: 'Z084048337634',
+        LMI_PAYMENT_AMOUNT: usdAmount,
+        LMI_PAYMENT_NO: orderId,
+        LMI_RESULT_URL:
+          'https://mz-irbit.onrender.com/payment/webmoney/result',
+        LMI_SUCCESS_URL:
+          `https://mz-irbit.onrender.com/payment/success?orderId=${orderId}`,
+        LMI_FAIL_URL:
+          `https://mz-irbit.onrender.com/payment/fail?orderId=${orderId}`,
+        LMI_PAYMENT_DESC_BASE64: btoa(
+          unescape(encodeURIComponent('Оплата заказа'))
+        )
+      }
+
+      Object.entries(fields).forEach(([key, value]) => {
+        const input = document.createElement('input')
+        input.type = 'hidden'
+        input.name = key
+        input.value = value
+        form.appendChild(input)
+      })
+
+      document.body.appendChild(form)
+      form.submit()
+    }
+  }
+
+    return (
+      <div className="checkout">
+        <div className="checkout-wrapper">
+
+          <h1 className="title">
+            Оформление заказа
+          </h1>
+
+          {/* Получатель */}
+          <section className="block">
+            <h2>Получатель</h2>
+            <br></br>
+
+            <div className="inputs">
+              <div>
+                <input
+                  type="text"
+                  placeholder="ФИО получателя"
+                  value={name}
+
+                  onChange={(e) => {
+
+                    let value =
+                      e.target.value
+                        // только русские буквы, пробелы и дефис
+                        .replace(
+                          /[^А-Яа-яЁё\s]/g,
+                          ''
+                        )
+
+                        // убрать двойные пробелы
+                        .replace(/\s+/g, ' ')
+
+                    // заглавные буквы
+                    value = value
+                      .split(' ')
+                      .map(word => {
+
+                        return word.charAt(0)
+                          .toUpperCase() +
+                          word
+                            .slice(1)
+                            .toLowerCase()
+
+                      })
+                      .join(' ')
+
+                    setName(value)
+                  }}
+
+                  onPaste={(e) => {
+
+                    e.preventDefault()
+
+                    const pasted =
+                      e.clipboardData
+                        .getData('text')
+
+                    let clean =
+                      pasted
+
+                        // запрет английских букв,
+                        // цифр и символов
+                        .replace(
+                          /[^А-Яа-яЁё\s-]/g,
+                          ''
+                        )
+
+                        // убрать двойные пробелы
+                        .replace(/\s+/g, ' ')
+
+                    // заглавные буквы
+                    clean = clean
+                      .split(' ')
+                      .map(word => {
+
+                        return word.charAt(0)
+                          .toUpperCase() +
+                          word
+                            .slice(1)
+                            .toLowerCase()
+
+                      })
+                      .join(' ')
+
+                    setName(clean)
+                  }}
+                />
+
+                <small className="hint">
+                  Например: Иванов Иван Иванович
+                </small>
+
+                {errors.name && (
+                  <span className="error">
+                    {errors.name}
+                  </span>
+                )}
+              </div>
+
+              <input
+                type="text"
+                placeholder="Телефон"
+                value={phone}
+                onChange={(e) => {
+                let value = e.target.value
+
+                // только цифры
+                value = value.replace(/\D/g, '')
+
+                // ограничим длину (11 цифр РФ)
+                if (value.length > 11) {
+                  value = value.slice(0, 11)
+                }
+
+                setPhone(value)
+              }}
+              />
+              <input
+                type="email"
+                placeholder="E-mail (необязательно)"
+                value={email}
+                onChange={(e) =>
+                  setEmail(e.target.value)
+                }
+              />
+
+              {errors.email && (
+                <span className="error">
+                  {errors.email}
+                </span>
+              )}
+            </div>
+          </section>
+
+          {/* Получение */}
+          <section className="block">
+            <h2>Способ получения</h2>
+
+            <div className="tabs">
+              <button
+                className={
+                  delivery === 'pickup'
+                    ? 'active'
+                    : ''
+                }
+                onClick={() =>
+                  setDelivery('pickup')
+                }
+              >
+                Самовывоз
+              </button>
+
+              <button
+                className={
+                  delivery === 'delivery'
+                    ? 'active'
+                    : ''
+                }
+                onClick={() =>
+                  setDelivery('delivery')
+                }
+              >
+                Доставка
+              </button>
+            </div>
+
+            {delivery === 'pickup' ? (
+              <div className="pickup-card">
+
+                <div className="pickup-info">
+                  <h3>
+                    Ирбитский молочный завод
+                  </h3>
+                  <br></br>
+                  <p>
+                    Ежедневно с 8:00 до 17:00
+                  </p>
+                  <br></br>
+                  <p>
+                    Ирбит, ул. Елизарьевых,
+                    дом 3
+                  </p>
+                </div>
+
+                <div className="map-wrapper">
+                  <YMaps>
+                    <Map
+                      defaultState={{
+                        center: [57.678233, 63.071533],
+                        zoom: 16
+                      }}
+                      width="100%"
+                      height="300px"
+                    >
+                      <Placemark
+                        geometry={[57.678233, 63.071533]}
+                        properties={{
+                          balloonContent:
+                            'Ирбитский молочный завод, ул. Елизарьевых, 3'
+                        }}
+                      />
+                    </Map>
+                  </YMaps>
+                </div>
+
+              </div>
+            ) : (
+              <div className="delivery-form">
+
+                <input
+                  type="text"
+                  placeholder="г. Город"
+                  value={city}
+                  onChange={(e) => {
+
+                    let value = e.target.value
+
+                      // только русские буквы, пробелы и дефис
+                      .replace(/[^А-Яа-яЁё\s]/g, '')
+
+                      // убрать цифры
+                      .replace(/[0-9]/g, '')
+
+                      // убрать любые варианты "г"
+                      .replace(/^(г\.?\s*)+/i, '')
+
+                      .trimStart()
+
+                    // Первая буква заглавная
+                    value =
+                      value.charAt(0).toUpperCase() +
+                      value.slice(1).toLowerCase()
+
+                    // Добавить префикс
+                    if (value) {
+                      value = `г. ${value}`
+                    }
+
+                    setCity(value)
+                  }}
+                />
+
+                {errors.city && (
+                  <span className="error">
+                    {errors.city}
+                  </span>
+                )}
+
+                <input
+                  type="text"
+                  placeholder="ул. Улица"
+                  value={street}
+                  onChange={(e) => {
+
+                    let value = e.target.value
+
+                      // только русские буквы, пробелы, точки и дефис
+                      .replace(/[^А-Яа-яЁё\s.]/g, '')
+
+                      // убрать старые префиксы
+                      .replace(/^(ул\.|пр\.|пер\.)\s*/i, '')
+
+                      .trimStart()
+
+                    // Заглавная буква
+                    value =
+                      value.charAt(0).toUpperCase() +
+                      value.slice(1).toLowerCase()
+
+                    // автоподстановка
+                    if (value) {
+                      value = `ул. ${value}`
+                    }
+
+                    setStreet(value)
+                  }}
+                />
+
+                {errors.street && (
+                  <span className="error">
+                    {errors.street}
+                  </span>
+                )}
+
+                <div className="row">
+
+                 <input
+                  type="text"
+                  placeholder="Дом"
+                  value={house}
+                  onChange={(e) => {
+
+                    let value = e.target.value
+
+                      // только цифры и русские буквы
+                      .replace(/[^0-9А-Яа-яЁё\s]/g, '')
+
+                      // убрать пробелы в начале
+                      .trimStart()
+
+                    setHouse(value)
+                  }}
+                />
+
+                  {!isPrivateHouse && (
+                    <input
+                    type="text"
+                    placeholder="Квартира"
+                    value={flat}
+                    onChange={(e) => {
+
+                      let value = e.target.value
+
+                        // только цифры
+                        .replace(/[^0-9]/g, '')
+
+                      setFlat(value)
+                    }}
+                  />
+                  )}
+
+                </div>
+
+                {errors.house && (
+                  <span className="error">
+                    {errors.house}
+                  </span>
+                )}
+
+                {addressError && (
+                  <span className="error">
+                    {addressError}
+                  </span>
+                )}
+
+                <div className="private-house-row">
+
+                  <label className="private-house-label">
+
+                    <input
+                      type="checkbox"
+                      checked={isPrivateHouse}
+                      onChange={(e) => {
+
+                        setIsPrivateHouse(
+                          e.target.checked
+                        )
+
+                        if (e.target.checked) {
+                          setFlat('')
+                        }
+                      }}
+                    />
+
+                    <span>Частный дом</span>
+
+                  </label>
+
+                </div>
+
+              </div>
+            )}
+          </section>
+
+          {/* Оплата */}
+          <section className="block">
+            <h2>Способ оплаты</h2>
+
+            <div className="payment-grid">
+
+              <div
+                className={getPaymentClass('wm')}
+                onClick={() => {
+                  setPayment('wm');
+                  setPaymentError('');
+                }}
+                >
+                <img
+                  src="/img/card.png"
+                  alt="Online payment"
+                  className="payment-icon"
+                />
+                Оплата онлайн
+            </div>
+
+              <div
+                className={
+                  payment === 'cash'
+                    ? 'payment active-payment'
+                    : 'payment'
+                }
+                onClick={() => {
+                  setPayment('cash')
+                  setPaymentError('')
+                }}
+              >
+                <img
+                  src="/img/cash.png"
+                  alt="Cash"
+                  className="payment-icon"
+                />
+                Оплата при получении
+              </div>
+
+            </div>
+
+          </section>
+
+          {/* Итог */}
+          <section className="summary">
+
+          <div>
+            <span>Товары</span>
+            <b>{productsTotal.toFixed(2)} ₽</b>
+          </div>
+
+          <div>
+            <span>Доставка</span>
+
+            <b>
+              {deliveryPrice === 0
+                ? 'Бесплатно'
+                : `${deliveryPrice} ₽`}
+            </b>
+          </div>
+
+          <div className="total">
+            <span>Итого</span>
+            <b>{totalPrice.toFixed(2)} ₽</b>
+          </div>
+
+            {paymentError && (
+              <div className="error">
+                {paymentError}
+              </div>
+            )}
+            <button
+              className="submit"
+              onClick={handleOrder}
+              disabled={loading}
+              style={{
+                opacity: loading ? 0.6 : 1,
+                cursor: loading ? 'not-allowed' : 'pointer'
+              }}
+            >
+              {loading ? 'Оформляем заказ...' : 'Подтвердить заказ'}
+            </button>
+          </section>
+
+        </div>
+      </div>
+    )
+}
 }
