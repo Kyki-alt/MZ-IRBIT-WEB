@@ -38,6 +38,19 @@ export default function PaymentResult() {
 
   }, [seconds, status, navigate])
 
+  const [order, setOrder] = useState(null)
+
+    useEffect(() => {
+
+      if (!orderId) return
+
+      fetch(`http://localhost:5000/api/orders/${orderId}`)
+        .then(res => res.json())
+        .then(data => setOrder(data))
+        .catch(console.error)
+
+    }, [orderId])
+
   return (
     <div className="payment-wrapper">
 
@@ -85,6 +98,42 @@ export default function PaymentResult() {
         <p className="order">
           Заказ № {orderId}
         </p>
+
+        {order && (
+        <div className="receipt">
+
+          <h3>Чек</h3>
+
+          {order.items.map(item => (
+            <div
+              key={item.product_id}
+              className="receipt-row"
+            >
+              <span>
+                {item.title} × {item.quantity}
+              </span>
+
+              <span>
+                {item.price * item.quantity} ₽
+              </span>
+            </div>
+          ))}
+
+          <div className="receipt-total">
+            Итого: {order.total_price} ₽
+          </div>
+
+
+          <a
+            href={`http://localhost:5000/receipts/${orderId}.pdf`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Скачать чек PDF
+          </a>
+
+        </div>
+      )}
 
         <p className="text">
           {status === 'success'
