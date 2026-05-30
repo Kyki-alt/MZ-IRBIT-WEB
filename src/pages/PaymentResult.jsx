@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './PaymentResult.css'
+import API_URL from '../config'
+
+fetch(`${API_URL}/orders/${orderId}`)
 
 export default function PaymentResult() {
 
@@ -44,7 +47,7 @@ export default function PaymentResult() {
 
       if (!orderId) return
 
-      fetch(`http://localhost:5000/api/orders/${orderId}`)
+      fetch(`https://mz-irbit.onrender.com/orders/${orderId}`)
         .then(res => res.json())
         .then(data => setOrder(data))
         .catch(console.error)
@@ -125,7 +128,7 @@ export default function PaymentResult() {
 
 
           <a
-            href={`http://localhost:5000/receipts/${orderId}.pdf`}
+            href={`https://mz-irbit.onrender.com/receipts/${orderId}.pdf`}
             target="_blank"
             rel="noreferrer"
           >
