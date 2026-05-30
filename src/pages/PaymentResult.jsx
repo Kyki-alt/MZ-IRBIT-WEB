@@ -3,8 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import './PaymentResult.css'
 import API_URL from '../config'
 
-fetch(`${API_URL}/orders/${orderId}`)
-
 export default function PaymentResult() {
 
   const navigate = useNavigate()
@@ -47,7 +45,7 @@ export default function PaymentResult() {
 
       if (!orderId) return
 
-      fetch(`https://mz-irbit.onrender.com/orders/${orderId}`)
+      fetch(`${API_URL}/orders/${orderId}`)
         .then(res => res.json())
         .then(data => setOrder(data))
         .catch(console.error)
