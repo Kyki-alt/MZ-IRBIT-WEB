@@ -126,7 +126,7 @@ export default function PaymentResult() {
 
 
           <a
-            href={`https://mz-irbit.onrender.com/receipts/${orderId}.pdf`}
+            href={`https://mz-irbit.onrender.com/orders/receipt/${orderId}`}
             target="_blank"
             rel="noreferrer"
           >
