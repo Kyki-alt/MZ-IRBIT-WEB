@@ -279,53 +279,69 @@ export default function Checkout() {
       return
     }
 
-    // -------------------------
-    // 1. проверка адреса
-    // -------------------------
-    if (delivery === 'delivery') {
-      try {
-        const normalizedCity =
-          city.replace('г. ', '').trim()
 
-        const normalizedStreet =
-          street
-            .replace('ул. ', '')
-            .replace('пр. ', '')
-            .replace('пер. ', '')
-            .trim()
-
-        const fullAddress =
-          `${normalizedCity}, ${normalizedStreet}, ${house}`
-
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullAddress)}`
-        )
-
-        const result = await response.json()
-
-        if (!result.length) {
-          setAddressError('Адрес не найден')
-          setLoading(false)
-          return
-        }
-
-        const foundAddress =
-          result[0].display_name.toLowerCase()
-
-        if (!foundAddress.includes(house.toLowerCase().trim())) {
-          setAddressError('Дом не найден')
-          setLoading(false)
-          return
-        }
-
-        setAddressError('')
-      } catch (error) {
-        console.log(error)
-        setLoading(false)
-        setAddressError('Ошибка проверки адреса')
-        return
-      }
+  if (delivery === 'delivery') {
+    if (!city || !street || !house) {
+      setAddressError('Заполните адрес доставки')
+      setLoading(false)
+      return
     }
+
+     // -------------------------
+  // город
+  // -------------------------
+  const cityClean = city
+    .replace('г. ', '')
+    .trim()
+
+    if (cityClean.length < 2) {
+      newErrors.city = 'Введите город'
+    }
+
+    const cityValid = /^[А-Яа-яЁё\s-]{2,}$/.test(cityClean)
+
+    if (!cityValid) {
+      newErrors.city = 'Некорректный город'
+    }
+
+    // -------------------------
+    // улица
+    // -------------------------
+    const streetClean = street
+      .replace('ул. ', '')
+      .trim()
+
+    if (streetClean.length < 3) {
+      newErrors.street = 'Введите улицу'
+    }
+
+    const streetValid = /^[А-Яа-яЁё0-9\s.-]{3,}$/.test(streetClean)
+
+    if (!streetValid) {
+      newErrors.street = 'Некорректная улица'
+    }
+
+    // -------------------------
+    // дом
+    // -------------------------
+    const houseValid = /^[0-9]+[а-яА-Яa-zA-Z]?$/.test(house.trim())
+
+    if (!houseValid) {
+      newErrors.house = 'Некорректный номер дома'
+    }
+
+    // -------------------------
+    // анти-абракадабра (простая защита)
+    // -------------------------
+    const weirdPattern = /(.)\1{3,}/
+
+    if (weirdPattern.test(city + street + house)) {
+      newErrors.city = 'Подозрительный адрес'
+    }
+  }
+
+    setAddressError('')
+  }
 
     // -------------------------
     // 2. проверка оплаты
