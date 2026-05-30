@@ -55,7 +55,7 @@ const handleSubmit = (e) => {
 
   const payload = {
     title,
-    price: Number(price),
+    price: Number(price.replace(',', '.')),
     stock: Number(stock),
     description,
     is_active,
@@ -142,7 +142,7 @@ const uploadImage = async (file) => {
       </select>
 
       <input
-        type="number"
+        type="text"
         placeholder="Цена"
         value={price}
         onChange={(e) => setPrice(e.target.value)}
