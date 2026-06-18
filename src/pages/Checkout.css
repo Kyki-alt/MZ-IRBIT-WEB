@@ -34,7 +34,6 @@ body {
 .inputs {
   display: flex;
   flex-direction: column;
-  gap: 15px;
 }
 
 input,
@@ -204,10 +203,24 @@ textarea {
 
 /* ERROR */
 .error {
-  display: block;
-  color: red;
-  font-size: 13px;
-  margin-top: 5px;
+  font-size: 12px;
+  color: #d93025;
+
+  background: #fff5f5;
+  border: 1px solid #ffd6d6;
+
+  padding: 8px 10px;
+  border-radius: 10px;
+
+  margin-top: 4px;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.error-wrapper {
+  margin-top: 10px;
 }
 
 /* PRIVATE HOUSE */
@@ -251,4 +264,76 @@ textarea {
   height: 40px;
   object-fit: contain;
   margin-right: 10px;
+}
+
+/* =========================
+   HINT TEXT (подсказки)
+========================= */
+.hint {
+  font-size: 12px;
+  color: #8c8c8c;
+
+  margin-top: 2px;
+  padding-left: 2px;
+
+  line-height: 1.4;
+}
+
+/* =========================
+   INPUT FOCUS (важно для UX)
+========================= */
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: #4ec6f5;
+  box-shadow: 0 0 0 3px rgba(78, 198, 245, 0.15);
+}
+
+/* =========================
+   ERROR STATE INPUT
+   (чтобы пользователь ВИДЕЛ ошибку сразу)
+========================= */
+input.error-input {
+  border-color: #ff4d4f;
+  background: #fff5f5;
+}
+
+input.error-input:focus {
+  box-shadow: 0 0 0 3px rgba(255, 77, 79, 0.15);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-radius: 14px;
+
+  transition: all 0.2s ease;
+}
+
+/* hover как карточка */
+.field:hover {
+  border-color: #d6ecff;
+  background: #f8fcff;
+}
+
+.field input {
+  border-radius: 10px;
+  border: 1px solid #ddd;
+
+  padding: 14px 14px;
+
+  transition: all 0.2s ease;
+  background: #fff;
+}
+
+/* focus */
+.field input:focus {
+  border-color: #4ec6f5;
+  box-shadow: 0 0 0 3px rgba(78, 198, 245, 0.15);
+}
+
+/* hover */
+.field input:hover {
+  border-color: #bcdfff;
 }

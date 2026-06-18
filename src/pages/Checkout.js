@@ -112,164 +112,67 @@ export default function Checkout() {
     return clean
   }
 
-  const validate = () => {
-    let newErrors = {}
+ const validate = () => {
+  const newErrors = {}
 
-    // ФИО
-    if (!name.trim()) {
+  // ---------------- NAME ----------------
+  if (!name.trim()) {
+    newErrors.name = 'Введите ФИО'
+  } else {
+    const fullName = name.trim().replace(/\s+/g, ' ')
+    const fioRegex = /^[А-Яа-яЁё\s-]+$/
 
-      newErrors.name =
-        'Введите ФИО'
-
+    if (!fioRegex.test(fullName)) {
+      newErrors.name = 'Допустимы только русские буквы'
     } else {
+      const parts = fullName.split(' ')
 
-      const fullName =
-        name
-          .trim()
-          .replace(/\s+/g, ' ')
-
-      // только русские буквы
-      const fioRegex =
-        /^[А-Яа-яЁё\s-]+$/
-
-      if (!fioRegex.test(fullName)) {
-
-        newErrors.name =
-          'Допустимы только русские буквы'
-
-      } else {
-
-        const parts =
-          fullName.split(' ')
-
-        // минимум имя + фамилия
-        if (parts.length < 2) {
-
-          newErrors.name =
-            'Введите имя и фамилию'
-
-        } else {
-
-          // проверка частей ФИО
-          const invalidPart =
-            parts.some(part => {
-
-              // минимум 2 буквы
-              if (part.length < 2) {
-                return true
-              }
-
-              // странные наборы согласных
-              if (
-                /^[БВГДЖЗЙКЛМНПРСТФХЦЧШЩ]{2,}$/i.test(part)
-              ) {
-                return true
-              }
-
-              return false
-            })
-
-          if (invalidPart) {
-
-            newErrors.name =
-              'Введите корректное ФИО'
-          }
-
-          // подозрительные слова
-          const suspiciousWords = [
-            'Тест',
-            'Admin',
-            'User',
-            'Qwerty',
-            'Аааа',
-            'Ыыыы'
-          ]
-
-          const hasSuspiciousWord =
-            parts.some(part =>
-              suspiciousWords.includes(part)
-            )
-
-          if (hasSuspiciousWord) {
-
-            newErrors.name =
-              'Введите корректное ФИО'
-          }
-
-          // повторяющиеся символы
-          const weirdLetters =
-            /(.)\1{3,}/
-
-          if (
-            weirdLetters.test(fullName)
-          ) {
-
-            newErrors.name =
-              'Введите корректное ФИО'
-          }
-        }
+      if (parts.length < 2) {
+        newErrors.name = 'Введите ФИО'
       }
-
-      // Телефон
-      const cleanPhone =
-        phone.replace(/\D/g, '')
-
-      if (!cleanPhone) {
-
-        newErrors.phone =
-          'Введите телефон'
-
-      } else {
-
-        const isValidPhone =
-          cleanPhone.length === 11 &&
-          (
-            cleanPhone.startsWith('7') ||
-            cleanPhone.startsWith('8')
-          )
-
-        if (!isValidPhone) {
-          newErrors.phone =
-            'Неверный номер телефона'
-        }
-      }
-
-      // Email
-      if (email.trim() !== '') {
-
-        const emailRegex =
-          /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-
-        if (!emailRegex.test(email)) {
-          newErrors.email =
-            'Некорректный email'
-        }
-      }
-
-      // Проверка доставки
-      if (delivery === 'delivery') {
-
-        if (!city.trim()) {
-          newErrors.city =
-            'Введите город'
-        }
-
-        if (!street.trim()) {
-          newErrors.street =
-            'Введите улицу'
-        }
-
-        if (!house.trim()) {
-          newErrors.house =
-            'Введите дом'
-        }
-      }
-
-      setErrors(newErrors)
-
-      return Object.keys(newErrors).length === 0
     }
   }
+
+  // ---------------- PHONE ----------------
+  const cleanPhone = phone.replace(/\D/g, '')
+
+  if (!cleanPhone) {
+    newErrors.phone = 'Введите телефон'
+  } else if (
+    !(cleanPhone.length === 11 &&
+      (cleanPhone.startsWith('7') || cleanPhone.startsWith('8')))
+  ) {
+    newErrors.phone = 'Неверный номер телефона'
+  }
+
+  // ---------------- EMAIL ----------------
+  if (email.trim()) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      newErrors.email = 'Некорректный email'
+    }
+  }
+
+  // ---------------- DELIVERY ----------------
+  if (delivery === 'delivery') {
+    if (!city.trim()) newErrors.city = 'Введите город'
+    if (!street.trim()) newErrors.street = 'Введите улицу'
+    if (!house.trim()) newErrors.house = 'Введите дом'
+  }
+
+  // ---------------- PAYMENT (ПЕРЕНЕСЕНО СЮДА) ----------------
+  if (!payment) {
+    setPaymentError('Выберите способ оплаты')
+  } else {
+    setPaymentError('')
+  }
+
+  setErrors(newErrors)
+  
+  // Возвращаем true, только если нет ошибок в полях И выбран способ оплаты
+  return Object.keys(newErrors).length === 0 && !!payment
+}
+  
   const handleOrder = async () => {
     if (loading) return
     setLoading(true)
@@ -328,18 +231,7 @@ export default function Checkout() {
     }
 
     // -------------------------
-    // 2. проверка оплаты
-    // -------------------------
-    if (!payment) {
-      setPaymentError('Выберите способ оплаты')
-      setLoading(false)
-      return
-    }
-
-    setPaymentError('')
-
-    // -------------------------
-    // 3. проверка корзины
+    // 2. проверка корзины
     // -------------------------
     let validateData
 
@@ -366,7 +258,7 @@ export default function Checkout() {
     }
 
     // -------------------------
-    // 4. обновляем корзину
+    // 3. обновляем корзину
     // -------------------------
     const updatedCart = cartItems.map(item => {
       const check = validateData.items?.find(i => i.id === item.id)
@@ -398,7 +290,7 @@ export default function Checkout() {
     }
 
     // -------------------------
-    // 5. создаём заказ
+    // 4. создаём заказ
     // -------------------------
     const orderResponse = await fetch(
       'https://mz-irbit.onrender.com/orders',
@@ -427,7 +319,7 @@ export default function Checkout() {
     const orderId = orderData.orderId
 
     // -------------------------
-    // 6. оплата при получении
+    // 5. оплата при получении
     // -------------------------
     if (payment === 'cash') {
       localStorage.removeItem('cart')
@@ -439,7 +331,7 @@ export default function Checkout() {
     }
 
     // -------------------------
-    // 7. WebMoney
+    // 6. WebMoney
     // -------------------------
     const rubAmount = totalPrice
 
@@ -498,6 +390,8 @@ export default function Checkout() {
           <section className="block">
             <h2>Получатель</h2>
             <br></br>
+
+          <div className="field">
 
             <div className="inputs">
               <div>
@@ -585,25 +479,51 @@ export default function Checkout() {
                   </span>
                 )}
               </div>
+            </div>
 
+            <div className="field">
               <input
                 type="text"
                 placeholder="Телефон"
                 value={phone}
                 onChange={(e) => {
-                let value = e.target.value
+                  let value = e.target.value.replace(/\D/g, '')
 
-                // только цифры
-                value = value.replace(/\D/g, '')
+                  if (value.length > 11) {
+                    value = value.slice(0, 11)
+                  }
 
-                // ограничим длину (11 цифр РФ)
-                if (value.length > 11) {
-                  value = value.slice(0, 11)
-                }
+                  setPhone(value)
 
-                setPhone(value)
-              }}
+                  // 🔴 LIVE ERROR
+                  if (value.length === 11) {
+                    const isValid =
+                      value.startsWith('7') || value.startsWith('8')
+
+                    setErrors(prev => ({
+                      ...prev,
+                      phone: isValid ? '' : 'Неверный номер телефона'
+                    }))
+                  } else {
+                    setErrors(prev => ({
+                      ...prev,
+                      phone: ''
+                    }))
+                  }
+                }}
               />
+
+              <small className="hint">
+                Например: 79001234567
+              </small>
+
+              {errors.phone && (
+                <span className="error">{errors.phone}</span>
+              )}
+
+            </div>
+
+            <div className="field">
               <input
                 type="email"
                 placeholder="E-mail (необязательно)"
@@ -613,12 +533,17 @@ export default function Checkout() {
                 }
               />
 
+              <small className="hint">
+                Например: user@mail.ru
+              </small>
+
               {errors.email && (
                 <span className="error">
                   {errors.email}
                 </span>
               )}
             </div>
+          </div>
           </section>
 
           {/* Получение */}
@@ -918,11 +843,14 @@ export default function Checkout() {
             <b>{totalPrice.toFixed(2)} ₽</b>
           </div>
 
-            {paymentError && (
+          {paymentError && (
+            <div className="error-wrapper">
               <div className="error">
                 {paymentError}
               </div>
-            )}
+            </div>
+          )}
+          
             <button
               className="submit"
               onClick={handleOrder}
