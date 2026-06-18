@@ -428,6 +428,17 @@ export default function Checkout() {
                       .join(' ')
 
                     setName(value)
+
+                    const fullName = value.trim().replace(/\s+/g, ' ')
+                    const parts = fullName.split(' ')
+                    
+                    // Если поле пустое или в нем есть хотя бы 2 слова — убираем ошибку
+                    if (!fullName || parts.length >= 2) {
+                      setErrors(prev => ({ ...prev, name: '' }))
+                    } else if (parts.length < 2) {
+                      // Если пользователь стер фамилию/имя обратно до 1 слова, можно вернуть подсказку
+                      setErrors(prev => ({ ...prev, name: 'Введите ФИО полностью' }))
+                    }
                   }}
 
                   onPaste={(e) => {
