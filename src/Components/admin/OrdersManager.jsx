@@ -260,7 +260,7 @@ export default function OrdersManager() {
           {/* INFO */}
           <div className="order-info">
 
-            <p>👤 {order.customer_name}</p>
+            <p>🙎‍♂️ {order.customer_name}</p>
             <p>📞 {order.phone}</p>
             <p>💰 {Number(order.total_price).toLocaleString()} ₽</p>
             <p>📅 {new Date(order.created_at).toLocaleString()}</p>

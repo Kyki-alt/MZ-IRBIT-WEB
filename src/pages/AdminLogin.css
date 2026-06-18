@@ -88,3 +88,51 @@
   text-align: center;
   font-weight: 600;
 }
+
+/* ========================================== */
+/* СТИЛЬ ДЛЯ КНОПКИ ВОССТАНОВЛЕНИЯ ПАРОЛЯ     */
+/* ========================================== */
+.admin-login-card button.forgot-password-btn {
+  /* Сбрасываем высоту, фон и рамки, заданные для общих кнопок */
+  height: auto;
+  background: none;
+  border: none;
+  border-radius: 0;
+  font-weight: 500;
+  
+  /* Делаем её аккуратной ссылкой */
+  color: #3d3c3c;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 5px 0;
+  margin-top: -5px; /* Немного прижимаем к элементам выше, чтобы сбалансировать gap: 20px */
+  transition: color .2s ease;
+  align-self: center; /* Центрируем только саму кнопку внутри flex-контейнера */
+}
+
+/* Эффект при наведении */
+.admin-login-card button.forgot-password-btn:hover {
+  color: #22aee9;
+  text-decoration: underline; /* Добавляем подчеркивание для эффекта ссылки */
+}
+
+/* Состояние во время отправки заглушки */
+.admin-login-card button.forgot-password-btn:disabled {
+  color: #bbb;
+  text-decoration: none;
+  cursor: not-allowed;
+}
+
+/* Стили для текстов ошибок и успехов  */
+.error-text {
+  color: red;
+  font-size: 14px;
+  text-align: center;
+}
+
+.success-text {
+  color: #16a34a;
+  font-size: 14px;
+  text-align: center;
+  font-weight: 600;
+}

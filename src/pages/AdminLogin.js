@@ -59,10 +59,27 @@ export default function AdminLogin() {
   }
 }
 
+// Функция восстановления (заглушка без бэкенда)
+  const handleForgotPassword = () => {
+    if (!login) {
+      setError('Введите ваш логин (email) для восстановления')
+      return
+    }
+
+    setLoading(true)
+    setError('')
+    setSuccess('')
+
+    // Имитируем задержку ответа от сервера (1 секунда)
+    setTimeout(() => {
+      setLoading(false)
+      setSuccess(`Ссылка для восстановления пароля отправлена на почту, связанную с логином "${login}"`)
+    }, 1000)
+  }
+
   return (
 
     <div className="admin-login-page">
-
       <div className="admin-login-card">
 
         <h1>
@@ -106,6 +123,15 @@ export default function AdminLogin() {
           {loading
             ? 'Вход...'
             : 'Войти'}
+        </button>
+
+        {/* Кнопка восстановления */}
+        <button 
+          onClick={handleForgotPassword}
+          disabled={loading}
+          className="forgot-password-btn"
+        >
+          {loading ? 'Отправка...' : 'Забыли пароль?'}
         </button>
 
       </div>
